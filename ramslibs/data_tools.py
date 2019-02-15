@@ -126,7 +126,7 @@ def import_variable(rootpath, habit, varname, domain_number, dimensions):
 
         for name in files:
             input_file = ncfile(name, 'r')
-            print name
+            print(name)
             variable[t, :, :] = input_file[varname][:, :]
             t = t + 1
             input_file.close()
@@ -151,7 +151,7 @@ def import_variable(rootpath, habit, varname, domain_number, dimensions):
 
         for name in files:
             input_file = ncfile(name)
-            print name
+            print(name)
             variable[t, :, :, :] = input_file[varname][:]
             t = t + 1
             input_file.close()
