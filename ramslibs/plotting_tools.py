@@ -1,4 +1,4 @@
-from mpl_toolkits.basemap import Basemap
+# from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
@@ -41,7 +41,7 @@ def plot_heights(heights, lats, lons, dx, save, filename):
         plt.show()
 
 
-def plot_snow(snow, lats, lons, dx):
+# def plot_snow(snow, lats, lons, dx):
     '''Plots snowfall amount variable across domain with map background'''
 
     snow = np.ma.masked_equal(snow, 0)
@@ -116,7 +116,7 @@ def plot_snow(snow, lats, lons, dx):
     return snow_plot
 
 
-def init_map(lats, lons, dx):
+# def init_map(lats, lons, dx):
     
     ny = int(lats.shape[0])
     nx = int(lats.shape[1])

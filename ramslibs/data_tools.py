@@ -2,6 +2,19 @@ r"""Contains a collection of functions for derived variables."""
 import numpy as np
 from netCDF4 import Dataset as ncfile
 from matplotlib import pyplot as plt
+import xarray as xa
+
+
+class DataInfo():
+    def __init__(self, variable, longname, unit):
+        self.variable = variable
+        self.longname = longname
+        self.unit = unit
+
+    def get_data(self, datadir, simulation):
+        file = xa.open_mfdataset(datadir + simulation + "*g2.h5", concat_dim='TIME')
+        data = file[self.variable]
+        return data
 
 
 def habit_count(habits, tmax):
@@ -56,30 +69,30 @@ def calc_height(topt, dimensions):
         return z
 
 
-def plot_domain2(variable, lats, lons, tmax):
-    from mpl_toolkits.basemap import Basemap
+# def plot_domain2(variable, lats, lons, tmax):
+#     from mpl_toolkits.basemap import Basemap
 
-    centlat = 38.2
-    centlon = -122.1
-    width = 925000
-    height = 700000
-    plt.ioff()
-    for t in range(0, tmax):
-        plt.figure(figsize=(12, 12))
-        m = Basemap(projection='stere', lon_0=centlon, lat_0=centlat,
-                    lat_ts=centlat, width=width, height=height)
+#     centlat = 38.2
+#     centlon = -122.1
+#     width = 925000
+#     height = 700000
+#     plt.ioff()
+#     for t in range(0, tmax):
+#         plt.figure(figsize=(12, 12))
+#         m = Basemap(projection='stere', lon_0=centlon, lat_0=centlat,
+#                     lat_ts=centlat, width=width, height=height)
 
-        m.drawcoastlines()
-        m.drawstates()
-        m.drawcountries()
-        parallels = np.arange(0., 90, 10.)
-        m.drawparallels(parallels, labels=[1, 0, 0, 0], fontsize=10)
-        meridians = np.arange(180., 360, 10.)
-        m.drawmeridians(meridians, labels=[0, 0, 0, 1], fontsize=10)
+#         m.drawcoastlines()
+#         m.drawstates()
+#         m.drawcountries()
+#         parallels = np.arange(0., 90, 10.)
+#         m.drawparallels(parallels, labels=[1, 0, 0, 0], fontsize=10)
+#         meridians = np.arange(180., 360, 10.)
+#         m.drawmeridians(meridians, labels=[0, 0, 0, 1], fontsize=10)
 
-        x, y = m(lons, lats)
-        m.contourf(x, y, variable[t, :, :])
-        plt.savefig(str(t) + ".png")
+#         x, y = m(lons, lats)
+#         m.contourf(x, y, variable[t, :, :])
+#         plt.savefig(str(t) + ".png")
 
 
 def vert_int(variable, dimensions):
