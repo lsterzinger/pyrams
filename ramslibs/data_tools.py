@@ -3,7 +3,9 @@ import numpy as np
 from netCDF4 import Dataset as ncfile
 from matplotlib import pyplot as plt
 import xarray as xa
+import pint
 
+ureg = pint.UnitRegistry()
 
 class DataInfo():
     def __init__(self, variable, longname, unit):
@@ -246,8 +248,28 @@ def pressure(pi):
     return p0*np.power((pi/cp), (cp/R))
 
 
-def temperature(theta, pi):
+def temperature(theta, pi, degc = False):
     r"""Calculate the temperature from Exner function using THETA and PI."""
     cp = 1004.
 
-    return theta*(pi/cp)
+    temp = theta*(pi/cp)
+    if degc is True:
+        temp = temp - 273.15
+
+    return(temp)
+def mslp(temp, press, height):
+    r"""
+    Calculate the mean sea level pressure
+
+    Needed:
+    ------
+    Temp: Celcius 
+
+    Press: hPa
+    
+    Height: Meter 
+    """
+    # p0 = press*(1-(0.0065*height)/(temp + 0.0065*height + 273.15))**-5.257
+    p0 = press * (1-(0.0065*height)/(temp+0.0065*height + 273.15))**-5.257
+
+    return(p0)
