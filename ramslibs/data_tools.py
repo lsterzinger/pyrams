@@ -4,8 +4,7 @@ from netCDF4 import Dataset as ncfile
 from matplotlib import pyplot as plt
 import xarray as xa
 import pint
-
-ureg = pint.UnitRegistry()
+import ramslibs.units as units
 
 class DataInfo():
     def __init__(self, variable, longname, unit):
@@ -59,15 +58,16 @@ def press_level(pressure, heights, plevels, xyt_dimensions):
 
 
 def calc_height(topt, dimensions):
+    from ramslibs.units import ztn
     xmax = dimensions[0]
     ymax = dimensions[1]
     zmax = dimensions[2]
 
     z = np.zeros((zmax, ymax, xmax))
-    ztop = units.ztn[59]
+    ztop = ztn[59]
     for x in range(0, xmax):
         for y in range(0, ymax):
-            z[:, y, x] = units.ztn * (1 - (topt[y, x]/ztop)) + topt[y, x]
+            z[:, y, x] = ztn * (1 - (topt[y, x]/ztop)) + topt[y, x]
         return z
 
 
@@ -273,3 +273,24 @@ def mslp(temp, press, height):
     p0 = press * (1-(0.0065*height)/(temp+0.0065*height + 273.15))**-5.257
 
     return(p0)
+
+def col_int_water_vapor(rtp, dn0, ztn = units.ztn):
+    r"""
+    Calculate the Column Integrated Water Vapor
+
+    Parameters
+    -----------
+    RTP :
+        Total Water Mixing Ratio (kg/kg)
+    DN0 :
+        Reference State Air Density (kg/m^3)
+
+    Returns
+    -------
+    Column Integrated Water Vapor (kg/m^2)
+    """
+
+    ciwv = np.zeros((rtp.shape[1], rtp.shape[2])) 
+
+    for k in range(1, rtp.shape[0]):
+        ciwv += rtp[k-1,:,:] * dn0[k-1] * (ztn[k] - ztn[k-1])
