@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 import xarray as xr
 import warnings
 
+
 class DataInfo():
     """
     A class to handle model data
@@ -229,16 +230,29 @@ def press_level(pressure, heights, plevels, xyt_dimensions):
     return press_height
 
 
-def calc_height(topt, dimensions):
-    from ramslibs.units import ztn
-    xmax = dimensions[0]
-    ymax = dimensions[1]
-    zmax = dimensions[2]
+def calc_height(topt, ztn):
+    """
+    Calculates the height of each grid box
 
-    z = np.zeros((zmax, ymax, xmax))
+    Parameters
+    ----------
+    topt : ndarray
+        The 2-D topographic height information
+    ztn : ndarray
+        The ztn variable from the *head.txt files output from RAMS
+
+    Returns
+    -------
+    z : ndarray
+        A 3-D array of the heights of each gridbox
+    """
+    ylen, xlen = topt.shape
+    zlen = len(ztn)
+
+    z = np.zeros((zlen, ylen, xlen))
     ztop = ztn[59]
-    for x in range(0, xmax):
-        for y in range(0, ymax):
+    for x in range(0, xlen):
+        for y in range(0, ylen):
             z[:, y, x] = ztn * (1 - (topt[y, x]/ztop)) + topt[y, x]
     return z
 
