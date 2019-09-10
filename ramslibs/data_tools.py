@@ -1,4 +1,4 @@
-r"""Contains a collection of functions for derived variables."""
+"""Contains a collection of functions for derived variables."""
 import numpy as np
 from netCDF4 import Dataset as ncfile
 from matplotlib import pyplot as plt
@@ -7,20 +7,47 @@ import warnings
 
 
 class DataInfo():
-    r"""A class created to manage variables, their names, and units."""
+    """
+    A class to handle model data
+    NOTE: Deprecated. Please use `DataVar()`
+    
+    ...
 
+    Attributes
+    ----------
+    variable : str
+        The name of the variable as found in the data files (e.g. "RTP")
+    longname : str
+        The long name of the variable (e.g. "Total Water Mixing Ratio")
+    unit : str
+        The unit of the variable (e.g. "kg/kg")
+    data : ndarray
+        The data array for the variable
+    """
     warnings.warn('Note: data_tools.DataInfo is depricated.\
         Please move to data_tools.DataVar')
 
-    def __init__(self, variable, longname, unit):
-        r"""
-        Sets the basics propreties of the data.
-        """
+    def __init__(self, variable, longname, unit):       
         self.variable = variable
         self.longname = longname
         self.unit = unit
 
     def get_data(self, datadir, simulation):
+        """
+        Parameters
+        ----------
+        datadir : str
+            The path of the data files
+        simulation : str
+            Name of the subfolder that the data is found in 
+            (e.g. "feb2014_control")
+        
+        Returns
+        -------
+        data : ndarray
+            The data for the desired variable
+        """
+
         file = xr.open_mfdataset(datadir + simulation + "*g2.h5",
                                  concat_dim='TIME')
         data = file[self.variable]
@@ -28,20 +55,48 @@ class DataInfo():
 
 
 class DataVar():
-    r"""A new class created to manage variables, their names, and units
-    (replaces data_toos.DataInfo)"""
-    def __init__(self, varname, *unit):
-        r"""Initialize with the variable name in output files
+    """
+    A new class created to manage variables, their names, and units
+    (replaces `DataInfo`)
+    
+    ...
 
-        Optional: add unit (e.g. 'kg/kg')"""
+    Parameters
+    ----------
+    varname :
+        str The variable name as found in the data files (e.g. "RTP")
+    longname : str
+        Optional. The long name of the variable
+        (e.g. "Total Water Mixing Ratio")
+    unit : str
+        Optional. The unit of the variable (e.g. "kg/kg")
+
+    Attributes
+    ----------
+    varname :
+        str The variable name as found in the data files (e.g. "RTP")
+    longname : str
+        The long name of the variable (e.g. "Total Water Mixing Ratio")
+    unit : str
+        The unit of the variable (e.g. "kg/kg")
+    data : ndarray
+        The data for the variable
+    """
+
+    def __init__(self, varname, longname=None, unit=None):
         self.varname = varname
-        if unit:
-            self.unit = unit
+        self.unit = unit
+        self.longname = longname
 
     def get_data(self, flist):
-        r'''
+        """
         Pulls data from a list of files (flist) and puts it into a single array
-        '''
+
+        Arguments
+        ---------
+        flist : list
+            A list of sorted file paths
+        """
         print(f'Opening {self.varname}')
 
         # Get dimensions
@@ -65,7 +120,7 @@ def vert_int(data, density, zheights, no_time=False):
     Calculates the vertical integration given 3-D data, air density,
     and grid height
 
-    Parameters:
+    Parameters
     -----------
     data: ndarray
         The data array. Can be in form (z, y, x), (z, x),
@@ -80,7 +135,7 @@ def vert_int(data, density, zheights, no_time=False):
     no_time: Bool, optional
         Flag for indicating lack of time dimension. Default=False
 
-    Returns:
+    Returns
     -------
     data_int: ndarray
         The vertically integrated array. Same dimensions as `data` except
@@ -137,7 +192,7 @@ def vert_int(data, density, zheights, no_time=False):
 
 
 def habit_count(habits, tmax):
-    r"""
+    """
     Takes 3D habit data and tmax (number of time steps) and returns the number
     of each habit at each time step.
     """
@@ -156,7 +211,7 @@ def habit_count(habits, tmax):
 
 
 def press_level(pressure, heights, plevels, xyt_dimensions):
-    r"""Returns geopotential heights at a given pressure level"""
+    """Returns geopotential heights at a given pressure level"""
     from metpy.interpolate import log_interpolate_1d
     from metpy.units import units
 
@@ -358,7 +413,7 @@ def z_levels_2d(ztn, topt, xmax, zmax):
 
 
 def pressure(pi):
-    r"""Calculate the pressure from Exner function using PI."""
+    """Calculate the pressure from Exner function using PI."""
     p0 = 1000.
     cp = 1004.
     R = 287.
@@ -367,7 +422,7 @@ def pressure(pi):
 
 
 def temperature(theta, pi):
-    r"""Calculate the temperature from Exner function using THETA and PI."""
+    """Calculate the temperature from Exner function using THETA and PI."""
     cp = 1004.
 
     return theta*(pi/cp)
