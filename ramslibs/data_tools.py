@@ -2,19 +2,138 @@ r"""Contains a collection of functions for derived variables."""
 import numpy as np
 from netCDF4 import Dataset as ncfile
 from matplotlib import pyplot as plt
-import xarray as xa
+import xarray as xr
+import warnings
 
 
 class DataInfo():
+    r"""A class created to manage variables, their names, and units."""
+
+    warnings.warn('Note: data_tools.DataInfo is depricated.\
+        Please move to data_tools.DataVar')
+
     def __init__(self, variable, longname, unit):
+        r"""
+        Sets the basics propreties of the data.
+        """
         self.variable = variable
         self.longname = longname
         self.unit = unit
 
     def get_data(self, datadir, simulation):
-        file = xa.open_mfdataset(datadir + simulation + "*g2.h5", concat_dim='TIME')
+        file = xr.open_mfdataset(datadir + simulation + "*g2.h5",
+                                 concat_dim='TIME')
         data = file[self.variable]
         return data
+
+
+class DataVar():
+    r"""A new class created to manage variables, their names, and units
+    (replaces data_toos.DataInfo)"""
+    def __init__(self, varname, *unit):
+        r"""Initialize with the variable name in output files
+
+        Optional: add unit (e.g. 'kg/kg')"""
+        self.varname = varname
+        if unit:
+            self.unit = unit
+
+    def get_data(self, flist):
+        r'''
+        Pulls data from a list of files (flist) and puts it into a single array
+        '''
+        print(f'Opening {self.varname}')
+
+        # Get dimensions
+        dims = list(xr.open_dataset(flist[0])[self.varname].shape)
+        dims.insert(0, len(flist))
+
+        # Create empty array
+        self.data = np.zeros(dims)
+
+        # Get data
+        for i in range(len(flist)):
+            ds = xr.open_dataset(flist[i])
+            self.data[i, :] = ds[self.varname]
+
+    def purge_data(self):
+        self.data = None
+
+
+def vert_int(data, density, zheights, no_time=False):
+    """
+    Calculates the vertical integration given 3-D data, air density,
+    and grid height
+
+    Parameters:
+    -----------
+    data: ndarray
+        The data array. Can be in form (z, y, x), (z, x),
+        (t, z, y, x), and (t, z, x)
+
+    density: ndarray
+        The air density, in (z, y, x) or (z, x)
+
+    zheights: ndarray
+        The height of the gridboxes, in (z, y, x) or (z, x)
+
+    no_time: Bool, optional
+        Flag for indicating lack of time dimension. Default=False
+
+    Returns:
+    -------
+    data_int: ndarray
+        The vertically integrated array. Same dimensions as `data` except
+        without the 'z' dimension
+    """
+
+    # if 3-D, assume z,y,x integrate to y,x
+    # If there's no time coordinate:
+    print(data.shape)
+    if no_time:
+        if len(data.shape) == 3:  # (z, y, x)
+            zax, yax, xax = 0, 1, 2
+            zlen, ylen, xlen = list(data.shape)
+            data_int = np.zeros((ylen, xlen))
+
+        elif len(data.shape) == 2:  # (z, x)
+            zax, xax = 0, 1
+            zlen, xlen = list(data.shape)
+            data_int = np.zeros((xlen))
+
+        else:
+            raise ValueError("Error with dimensions...\
+                are you sure there's no time dimension?")
+
+        # Do vertical integration
+        data = data * density  # Multiply by density to get kg/m^3
+        for z in range(zlen-1):
+            data_int += data[z, :] * (zheights[z+1, :] - zheights[z, :])
+
+    # If there is a time coordinate
+    else:
+        if len(data.shape) == 4:  # (t, z, y, x)
+            tax, zax, yax, xax = 0, 1, 2, 3
+            tlen, zlen, ylen, xlen = list(data.shape)
+            data_int = np.zeros((tlen, ylen, xlen))
+
+        elif len(data.shape) == 3:  # (t, z, x)
+            tax, zax, xax = 0, 1, 2
+            tlen, zlen, xlen = list(data.shape)
+            data_int = np.zeros((tlen, xlen))
+
+        else:
+            raise ValueError("Error with dimensions,\
+                are you sure you mean to have a time dimension?")
+
+        # Do vertical integration
+        for t in range(tlen):
+            data[t, :] = data[t, :] * density  # Multiply by density to kg/m^3
+            for z in range(zlen-1):
+                data_int[t, :] += data[t, z, :] *\
+                    (zheights[z+1, :] - zheights[z, :])
+
+    return data_int
 
 
 def habit_count(habits, tmax):
@@ -57,16 +176,17 @@ def press_level(pressure, heights, plevels, xyt_dimensions):
 
 
 def calc_height(topt, dimensions):
+    from ramslibs.units import ztn
     xmax = dimensions[0]
     ymax = dimensions[1]
     zmax = dimensions[2]
 
     z = np.zeros((zmax, ymax, xmax))
-    ztop = units.ztn[59]
+    ztop = ztn[59]
     for x in range(0, xmax):
         for y in range(0, ymax):
-            z[:, y, x] = units.ztn * (1 - (topt[y, x]/ztop)) + topt[y, x]
-        return z
+            z[:, y, x] = ztn * (1 - (topt[y, x]/ztop)) + topt[y, x]
+    return z
 
 
 # def plot_domain2(variable, lats, lons, tmax):
@@ -95,24 +215,24 @@ def calc_height(topt, dimensions):
 #         plt.savefig(str(t) + ".png")
 
 
-def vert_int(variable, dimensions):
-    xmax = dimensions[0]
-    ymax = dimensions[1]
-    zmax = dimensions[2]
-    tmax = dimensions[3]
+# def vert_int(variable, dimensions):
+#     xmax = dimensions[0]
+#     ymax = dimensions[1]
+#     zmax = dimensions[2]
+#     tmax = dimensions[3]
 
-    var_out = np.zeros((tmax, ymax, xmax))
+#     var_out = np.zeros((tmax, ymax, xmax))
 
-    for t in range(0, tmax):
-        for x in range(0, xmax):
-            for y in range(0, ymax):
-                col_tot = 0
+#     for t in range(0, tmax):
+#         for x in range(0, xmax):
+#             for y in range(0, ymax):
+#                 col_tot = 0
 
-                for z in range(0, zmax):
-                    col_tot = col_tot + variable[t, z, y, x]
-                var_out[t, y, x] = col_tot
+#                 for z in range(0, zmax):
+#                     col_tot = col_tot + variable[t, z, y, x]
+#                 var_out[t, y, x] = col_tot
 
-    return var_out
+#     return var_out
 
 
 def import_variable(rootpath, habit, varname, domain_number, dimensions):
