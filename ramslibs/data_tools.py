@@ -5,7 +5,6 @@ from matplotlib import pyplot as plt
 import xarray as xr
 import warnings
 
-
 class DataInfo():
     """
     A class to handle model data
@@ -425,4 +424,45 @@ def temperature(theta, pi):
     """Calculate the temperature from Exner function using THETA and PI."""
     cp = 1004.
 
-    return theta*(pi/cp)
+    temp = theta*(pi/cp)
+    if degc is True:
+        temp = temp - 273.15
+
+    return(temp)
+def mslp(temp, press, height):
+    r"""
+    Calculate the mean sea level pressure
+
+    Needed:
+    ------
+    Temp: Celcius 
+
+    Press: hPa
+    
+    Height: Meter 
+    """
+    # p0 = press*(1-(0.0065*height)/(temp + 0.0065*height + 273.15))**-5.257
+    p0 = press * (1-(0.0065*height)/(temp+0.0065*height + 273.15))**-5.257
+
+    return(p0)
+
+def col_int_water_vapor(rtp, dn0, ztn = units.ztn):
+    r"""
+    Calculate the Column Integrated Water Vapor
+
+    Parameters
+    -----------
+    RTP :
+        Total Water Mixing Ratio (kg/kg)
+    DN0 :
+        Reference State Air Density (kg/m^3)
+
+    Returns
+    -------
+    Column Integrated Water Vapor (kg/m^2)
+    """
+
+    ciwv = np.zeros((rtp.shape[1], rtp.shape[2])) 
+
+    for k in range(1, rtp.shape[0]):
+        ciwv += rtp[k-1,:,:] * dn0[k-1] * (ztn[k] - ztn[k-1])
