@@ -1,25 +1,197 @@
-r"""Contains a collection of functions for derived variables."""
+"""Contains a collection of functions for derived variables."""
 import numpy as np
 from netCDF4 import Dataset as ncfile
 from matplotlib import pyplot as plt
-import xarray as xa
-import pint
-import ramslibs.units as units
+import xarray as xr
+import warnings
 
 class DataInfo():
-    def __init__(self, variable, longname, unit):
+    """
+    A class to handle model data
+    NOTE: Deprecated. Please use `DataVar()`
+    
+    ...
+
+    Attributes
+    ----------
+    variable : str
+        The name of the variable as found in the data files (e.g. "RTP")
+    longname : str
+        The long name of the variable (e.g. "Total Water Mixing Ratio")
+    unit : str
+        The unit of the variable (e.g. "kg/kg")
+    data : ndarray
+        The data array for the variable
+    """
+    warnings.warn('Note: data_tools.DataInfo is depricated.\
+        Please move to data_tools.DataVar')
+
+    def __init__(self, variable, longname, unit):       
         self.variable = variable
         self.longname = longname
         self.unit = unit
 
     def get_data(self, datadir, simulation):
-        file = xa.open_mfdataset(datadir + simulation + "*g2.h5", concat_dim='TIME')
+        """
+        Parameters
+        ----------
+        datadir : str
+            The path of the data files
+        simulation : str
+            Name of the subfolder that the data is found in 
+            (e.g. "feb2014_control")
+        
+        Returns
+        -------
+        data : ndarray
+            The data for the desired variable
+        """
+
+        file = xr.open_mfdataset(datadir + simulation + "*g2.h5",
+                                 concat_dim='TIME')
         data = file[self.variable]
         return data
 
 
+class DataVar():
+    """
+    A new class created to manage variables, their names, and units
+    (replaces `DataInfo`)
+    
+    ...
+
+    Parameters
+    ----------
+    varname :
+        str The variable name as found in the data files (e.g. "RTP")
+    longname : str
+        Optional. The long name of the variable
+        (e.g. "Total Water Mixing Ratio")
+    unit : str
+        Optional. The unit of the variable (e.g. "kg/kg")
+
+    Attributes
+    ----------
+    varname :
+        str The variable name as found in the data files (e.g. "RTP")
+    longname : str
+        The long name of the variable (e.g. "Total Water Mixing Ratio")
+    unit : str
+        The unit of the variable (e.g. "kg/kg")
+    data : ndarray
+        The data for the variable
+    """
+
+    def __init__(self, varname, longname=None, unit=None):
+        self.varname = varname
+        self.unit = unit
+        self.longname = longname
+
+    def get_data(self, flist):
+        """
+        Pulls data from a list of files (flist) and puts it into a single array
+
+        Arguments
+        ---------
+        flist : list
+            A list of sorted file paths
+        """
+        print(f'Opening {self.varname}')
+
+        # Get dimensions
+        dims = list(xr.open_dataset(flist[0])[self.varname].shape)
+        dims.insert(0, len(flist))
+
+        # Create empty array
+        self.data = np.zeros(dims)
+
+        # Get data
+        for i in range(len(flist)):
+            ds = xr.open_dataset(flist[i])
+            self.data[i, :] = ds[self.varname]
+
+    def purge_data(self):
+        self.data = None
+
+
+def vert_int(data, density, zheights, no_time=False):
+    """
+    Calculates the vertical integration given 3-D data, air density,
+    and grid height
+
+    Parameters
+    -----------
+    data: ndarray
+        The data array. Can be in form (z, y, x), (z, x),
+        (t, z, y, x), and (t, z, x)
+
+    density: ndarray
+        The air density, in (z, y, x) or (z, x)
+
+    zheights: ndarray
+        The height of the gridboxes, in (z, y, x) or (z, x)
+
+    no_time: Bool, optional
+        Flag for indicating lack of time dimension. Default=False
+
+    Returns
+    -------
+    data_int: ndarray
+        The vertically integrated array. Same dimensions as `data` except
+        without the 'z' dimension
+    """
+
+    # if 3-D, assume z,y,x integrate to y,x
+    # If there's no time coordinate:
+    print(data.shape)
+    if no_time:
+        if len(data.shape) == 3:  # (z, y, x)
+            zax, yax, xax = 0, 1, 2
+            zlen, ylen, xlen = list(data.shape)
+            data_int = np.zeros((ylen, xlen))
+
+        elif len(data.shape) == 2:  # (z, x)
+            zax, xax = 0, 1
+            zlen, xlen = list(data.shape)
+            data_int = np.zeros((xlen))
+
+        else:
+            raise ValueError("Error with dimensions...\
+                are you sure there's no time dimension?")
+
+        # Do vertical integration
+        data = data * density  # Multiply by density to get kg/m^3
+        for z in range(zlen-1):
+            data_int += data[z, :] * (zheights[z+1, :] - zheights[z, :])
+
+    # If there is a time coordinate
+    else:
+        if len(data.shape) == 4:  # (t, z, y, x)
+            tax, zax, yax, xax = 0, 1, 2, 3
+            tlen, zlen, ylen, xlen = list(data.shape)
+            data_int = np.zeros((tlen, ylen, xlen))
+
+        elif len(data.shape) == 3:  # (t, z, x)
+            tax, zax, xax = 0, 1, 2
+            tlen, zlen, xlen = list(data.shape)
+            data_int = np.zeros((tlen, xlen))
+
+        else:
+            raise ValueError("Error with dimensions,\
+                are you sure you mean to have a time dimension?")
+
+        # Do vertical integration
+        for t in range(tlen):
+            data[t, :] = data[t, :] * density  # Multiply by density to kg/m^3
+            for z in range(zlen-1):
+                data_int[t, :] += data[t, z, :] *\
+                    (zheights[z+1, :] - zheights[z, :])
+
+    return data_int
+
+
 def habit_count(habits, tmax):
-    r"""
+    """
     Takes 3D habit data and tmax (number of time steps) and returns the number
     of each habit at each time step.
     """
@@ -38,7 +210,7 @@ def habit_count(habits, tmax):
 
 
 def press_level(pressure, heights, plevels, xyt_dimensions):
-    r"""Returns geopotential heights at a given pressure level"""
+    """Returns geopotential heights at a given pressure level"""
     from metpy.interpolate import log_interpolate_1d
     from metpy.units import units
 
@@ -68,7 +240,7 @@ def calc_height(topt, dimensions):
     for x in range(0, xmax):
         for y in range(0, ymax):
             z[:, y, x] = ztn * (1 - (topt[y, x]/ztop)) + topt[y, x]
-        return z
+    return z
 
 
 # def plot_domain2(variable, lats, lons, tmax):
@@ -97,24 +269,24 @@ def calc_height(topt, dimensions):
 #         plt.savefig(str(t) + ".png")
 
 
-def vert_int(variable, dimensions):
-    xmax = dimensions[0]
-    ymax = dimensions[1]
-    zmax = dimensions[2]
-    tmax = dimensions[3]
+# def vert_int(variable, dimensions):
+#     xmax = dimensions[0]
+#     ymax = dimensions[1]
+#     zmax = dimensions[2]
+#     tmax = dimensions[3]
 
-    var_out = np.zeros((tmax, ymax, xmax))
+#     var_out = np.zeros((tmax, ymax, xmax))
 
-    for t in range(0, tmax):
-        for x in range(0, xmax):
-            for y in range(0, ymax):
-                col_tot = 0
+#     for t in range(0, tmax):
+#         for x in range(0, xmax):
+#             for y in range(0, ymax):
+#                 col_tot = 0
 
-                for z in range(0, zmax):
-                    col_tot = col_tot + variable[t, z, y, x]
-                var_out[t, y, x] = col_tot
+#                 for z in range(0, zmax):
+#                     col_tot = col_tot + variable[t, z, y, x]
+#                 var_out[t, y, x] = col_tot
 
-    return var_out
+#     return var_out
 
 
 def import_variable(rootpath, habit, varname, domain_number, dimensions):
@@ -240,7 +412,7 @@ def z_levels_2d(ztn, topt, xmax, zmax):
 
 
 def pressure(pi):
-    r"""Calculate the pressure from Exner function using PI."""
+    """Calculate the pressure from Exner function using PI."""
     p0 = 1000.
     cp = 1004.
     R = 287.
@@ -248,8 +420,8 @@ def pressure(pi):
     return p0*np.power((pi/cp), (cp/R))
 
 
-def temperature(theta, pi, degc = False):
-    r"""Calculate the temperature from Exner function using THETA and PI."""
+def temperature(theta, pi):
+    """Calculate the temperature from Exner function using THETA and PI."""
     cp = 1004.
 
     temp = theta*(pi/cp)
