@@ -429,6 +429,8 @@ def temperature(theta, pi):
         temp = temp - 273.15
 
     return(temp)
+
+
 def mslp(temp, press, height):
     r"""
     Calculate the mean sea level pressure
@@ -446,23 +448,23 @@ def mslp(temp, press, height):
 
     return(p0)
 
-def col_int_water_vapor(rtp, dn0, ztn = units.ztn):
-    r"""
-    Calculate the Column Integrated Water Vapor
+# def col_int_water_vapor(rtp, dn0, ztn = units.ztn):
+#     r"""
+#     Calculate the Column Integrated Water Vapor
 
-    Parameters
-    -----------
-    RTP :
-        Total Water Mixing Ratio (kg/kg)
-    DN0 :
-        Reference State Air Density (kg/m^3)
+#     Parameters
+#     -----------
+#     RTP :
+#         Total Water Mixing Ratio (kg/kg)
+#     DN0 :
+#         Reference State Air Density (kg/m^3)
 
-    Returns
-    -------
-    Column Integrated Water Vapor (kg/m^2)
-    """
+#     Returns
+#     -------
+#     Column Integrated Water Vapor (kg/m^2)
+#     """
 
-    ciwv = np.zeros((rtp.shape[1], rtp.shape[2])) 
+#     ciwv = np.zeros((rtp.shape[1], rtp.shape[2])) 
 
-    for k in range(1, rtp.shape[0]):
-        ciwv += rtp[k-1,:,:] * dn0[k-1] * (ztn[k] - ztn[k-1])
+#     for k in range(1, rtp.shape[0]):
+#         ciwv += rtp[k-1,:,:] * dn0[k-1] * (ztn[k] - ztn[k-1])
