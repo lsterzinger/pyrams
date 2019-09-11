@@ -3,7 +3,7 @@
 
 Install with:
 ```
-git clone git@bitbucket.org:ucd_clouds/ramslibs.git
+git clone git@github.com:lsterzinger/ramslibs.git
 cd ramslibs
 pip install .
 ``` 
