@@ -24,10 +24,10 @@ class DataInfo():
     data : ndarray
         The data array for the variable
     """
-    warnings.warn('Note: data_tools.DataInfo is depricated.\
-        Please move to data_tools.DataVar')
 
-    def __init__(self, variable, longname, unit):       
+    def __init__(self, variable, longname, unit):
+        warnings.warn('Note: data_tools.DataInfo is depricated.\
+            Please move to data_tools.DataVar')
         self.variable = variable
         self.longname = longname
         self.unit = unit
@@ -39,9 +39,9 @@ class DataInfo():
         datadir : str
             The path of the data files
         simulation : str
-            Name of the subfolder that the data is found in 
+            Name of the subfolder that the data is found in
             (e.g. "feb2014_control")
-        
+
         Returns
         -------
         data : ndarray
@@ -144,7 +144,6 @@ def vert_int(data, density, zheights, no_time=False):
 
     # if 3-D, assume z,y,x integrate to y,x
     # If there's no time coordinate:
-    print(data.shape)
     if no_time:
         if len(data.shape) == 3:  # (z, y, x)
             zax, yax, xax = 0, 1, 2
@@ -210,23 +209,60 @@ def habit_count(habits, tmax):
     return count
 
 
-def press_level(pressure, heights, plevels, xyt_dimensions):
-    """Returns geopotential heights at a given pressure level"""
+def press_level(pressure, heights, plevels, no_time=False):
+    """
+    Calculates geopotential heights at a given pressure level
+
+    Parameters
+    ----------
+    pressure : ndarray
+         The 3-D pressure field (assumes time dimension, turn off
+         with `no_time=True`)
+
+    heights : ndarray
+        The 3-D array of gridbox heights
+
+    plevels : list
+        List of pressure levels to interpolate to
+
+    no_time=False: boolean
+        Optional, set to `True` to indicate lack of time dimension.
+
+    Returns
+    -------
+    press_height : ndarray
+        The geopotential heights at the specified pressure levels
+    """
     from metpy.interpolate import log_interpolate_1d
-    from metpy.units import units
 
-    xmax = xyt_dimensions[0]
-    ymax = xyt_dimensions[1]
-    tmax = xyt_dimensions[2]
+    if no_time is False:
+        try:
+            tlen, zlen, ylen, xlen = pressure.shape
 
-    press_height = np.zeros((tmax, ymax, xmax)) * units.meter
+            press_height = np.zeros((tlen, ylen, xlen))
+            for t in range(0, tlen):
+                for x in range(0, xlen):
+                    for y in range(0, ylen):
+                        press_height[t, y, x] =\
+                            log_interpolate_1d(plevels, pressure[t, :, y, x],
+                                               heights[:, y, x])
+        except ValueError:
+            print("Error in dimensions, trying with no_time=True")
+            no_time = True
 
-    for t in range(0, tmax):
-        for x in range(0, xmax):
-            for y in range(0, ymax):
-                press_height[t, y, x] =\
-                 log_interpolate_1d(plevels, pressure[t, :, y, x],
-                                    heights[:, y, x])
+    elif no_time is True:
+        try:
+            xlen, ylen, xlen = pressure.shape
+
+            press_height = np.zeros((ylen, xlen))
+            for x in range(0, xlen):
+                for y in range(0, ylen):
+                    press_height[t, y, x] =\
+                        log_interpolate_1d(plevels, pressure[t, :, y, x],
+                                           heights[:, y, x])
+        except ValueError:
+            print("Error in dimensions")
+
     return press_height
 
 
@@ -238,6 +274,7 @@ def calc_height(topt, ztn):
     ----------
     topt : ndarray
         The 2-D topographic height information
+        
     ztn : ndarray
         The ztn variable from the *head.txt files output from RAMS
 
@@ -303,130 +340,82 @@ def calc_height(topt, ztn):
 #     return var_out
 
 
-def import_variable(rootpath, habit, varname, domain_number, dimensions):
-    import glob
-    filepath = rootpath + "feb2014_" + habit
-    t = 0
+def z_levels_3d(ztn, topt):
+    """
+    Calculates the gridbox heights for a 3-D grid
 
-    if(len(dimensions) == 3):
-        xmax = dimensions[0]
-        ymax = dimensions[1]
-        tmax = dimensions[2]
-        variable = np.zeros((tmax, ymax, xmax))
+    Parameters
+    ----------
+    ztn : list
+        List of ztn values from RAMS *head.txt output
 
-        files = []
+    topt : ndarray
+        2-D array of topography height values
 
-        for name in glob.glob(filepath+'/*-g'+str(domain_number)+".h5"):
-            if t == tmax:
-                break
-            files.append(name)
-            t = t + 1
+    Returns
+    -------
+    zheight : ndarray
+        3-D array of gridbox heights
+    """
 
-        files.sort()
-        t = 0
+    ylen, xlen = topt.shape
+    zlen = len(ztn)
 
-        for name in files:
-            input_file = ncfile(name, 'r')
-            print(name)
-            variable[t, :, :] = input_file[varname][:, :]
-            t = t + 1
-            input_file.close()
-
-    elif(len(dimensions) == 4):
-        xmax = dimensions[0]
-        ymax = dimensions[1]
-        zmax = dimensions[2]
-        tmax = dimensions[3]
-        variable = np.zeros((tmax, zmax, ymax, xmax))
-
-        files = []
-
-        for name in glob.glob(filepath+'/*-g'+str(domain_number)+".h5"):
-            if t == tmax:
-                break
-            files.append(name)
-            t = t+1
-
-        files.sort()
-        t = 0
-
-        for name in files:
-            input_file = ncfile(name)
-            print(name)
-            variable[t, :, :, :] = input_file[varname][:]
-            t = t + 1
-            input_file.close()
-
-    return variable
-
-
-def domain_average_2d(variable, dimensions):
-    # Do domain average
-    xmax = dimensions[0]
-    ymax = dimensions[1]
-    tmax = dimensions[2]
-    average = np.zeros(tmax)
-
-    for t in range(0, tmax):
-        sum = 0
-        for x in range(0, xmax):
-            for y in range(0, ymax):
-                sum = sum + variable[t, y, x]
-
-        average[t] = sum/(xmax*ymax)
-    return average
-
-
-def time_average_3d(variable, tmax, zmax, ymax, xmax):
-    total = 0
-    output_var = np.zeros(tmax)
-
-    for t in range(0, tmax):
-        for x in range(0, xmax):
-            for y in range(0, ymax):
-                for z in range(0, zmax):
-                    total = total + variable[t, z, y, x]
-        output_var[t] = total/(xmax*ymax)*zmax
-        total = 0
-    return output_var
-
-
-def time_average_2d(variable, tmax, ymax, xmax):
-    total = 0
-    output_var = np.zeros(tmax)
-
-    for t in range(0, tmax):
-        for x in range(0, xmax):
-            for y in range(0, ymax):
-                total = total + variable[t, y, x]
-        output_var[t] = total/(xmax*ymax)
-        total = 0
-    return output_var
-
-
-def z_levels_3d(ztn, topt, xmax, ymax, zmax):
-    zheight = np.zeros((zmax, ymax, xmax))
-    for x in range(0, xmax):
-        for y in range(0, ymax):
-            for z in range(0, zmax):
+    zheight = np.zeros((zlen, ylen, xlen))
+    for x in range(0, xlen):
+        for y in range(0, ylen):
+            for z in range(0, zlen):
                 zheight[z, y, x] = ztn[z] * \
-                    (1-topt[y, x]/ztn[zmax-1])+topt[y, x]
+                    (1-topt[y, x]/ztn[zlen-1])+topt[y, x]
 
     return zheight
 
 
-def z_levels_2d(ztn, topt, xmax, zmax):
-    zheight = np.zeros((zmax, xmax))
-    for x in range(0, xmax):
-        for z in range(0, zmax):
+def z_levels_2d(ztn, topt):
+    """
+    Calculates the gridbox heights for a 2-D grid
+
+    Parameters
+    ----------
+    ztn : list
+        List of ztn values from RAMS *head.txt output
+
+    topt : ndarray
+        1-D array of topography height values
+
+    Returns
+    -------
+    zheight : ndarray
+        2-D array of gridbox heights
+    """
+
+    xlen = topt.shape
+    zlen = len(ztn)
+
+    zheight = np.zeros((zlen, xlen))
+    for x in range(0, xlen):
+        for z in range(0, zlen):
             zheight[z, x] = ztn[z] * \
-                (1-topt[x]/ztn[zmax-1])+topt[x]
+                (1-topt[x]/ztn[zlen-1])+topt[x]
 
     return zheight
 
 
 def pressure(pi):
-    """Calculate the pressure from Exner function using PI."""
+    """
+    Calculate the pressure from Exner function using PI.
+
+    Parameters
+    ----------
+    pi : ndarray
+        PI (modified exner function) from RAMS model output
+
+    Returns
+    -------
+    pressure : ndarray
+        Pressure (millibars)
+    """
+
     p0 = 1000.
     cp = 1004.
     R = 287.
@@ -434,8 +423,26 @@ def pressure(pi):
     return p0*np.power((pi/cp), (cp/R))
 
 
-def temperature(theta, pi):
-    """Calculate the temperature from Exner function using THETA and PI."""
+def temperature(theta, pi, degc=False):
+    """
+    Calculate the temperature from Exner function using THETA and PI.
+    
+    Parameters
+    ----------
+    theta : ndarray
+        THETA (potential temperature) variable from RAMS output
+
+    pi : ndarray
+        PI (modified exner function) from RAMS output
+
+    degc=False : boolean
+        Optional, set to `True` to output temperature in Celsius instead of Kelvin
+
+    Returns
+    -------
+    temperature : ndarray
+        The temperature in Kelvin (or Celsius if `degc=True`)
+    """
     cp = 1004.
 
     temp = theta*(pi/cp)
@@ -446,39 +453,26 @@ def temperature(theta, pi):
 
 
 def mslp(temp, press, height):
-    r"""
+    """
     Calculate the mean sea level pressure
 
-    Needed:
+    Parameters
     ------
-    Temp: Celcius 
+    temp : ndarray
+        Temperature in Celsius
 
-    Press: hPa
-    
-    Height: Meter 
+    press: ndarray
+        Pressure in hPa
+
+    height: ndarray
+        height of the terrain in meters
+
+    Returns
+    -------
+    p0 : ndarray
+        The MSLP pressure (hPa)
     """
     # p0 = press*(1-(0.0065*height)/(temp + 0.0065*height + 273.15))**-5.257
     p0 = press * (1-(0.0065*height)/(temp+0.0065*height + 273.15))**-5.257
 
     return(p0)
-
-# def col_int_water_vapor(rtp, dn0, ztn = units.ztn):
-#     r"""
-#     Calculate the Column Integrated Water Vapor
-
-#     Parameters
-#     -----------
-#     RTP :
-#         Total Water Mixing Ratio (kg/kg)
-#     DN0 :
-#         Reference State Air Density (kg/m^3)
-
-#     Returns
-#     -------
-#     Column Integrated Water Vapor (kg/m^2)
-#     """
-
-#     ciwv = np.zeros((rtp.shape[1], rtp.shape[2])) 
-
-#     for k in range(1, rtp.shape[0]):
-#         ciwv += rtp[k-1,:,:] * dn0[k-1] * (ztn[k] - ztn[k-1])
