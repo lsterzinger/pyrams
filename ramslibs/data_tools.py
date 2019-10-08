@@ -115,6 +115,34 @@ class DataVar():
         self.data = None
 
 
+def flist_to_times(flist):
+    """
+    Creates a list of datetimes from a list of RAMS output
+    variables.
+
+    Note: This only works if there are no hyphens ('-') in the
+    folder names.
+.
+    Parameters
+    ----------
+    flilst: list
+        A list of files
+
+    Returns
+    -------
+    times: list
+        A list of times in datetime format.
+    """
+    import datetime
+    times = np.zeros(len(flist))
+    for i in range(len(flist)):
+        traw = flist[i].split("-")[2:6]
+        traw = "".join(traw)
+        times[i] = datetime.strptime(traw, "%Y%m%d%H%M%S")
+
+    return times
+
+
 def vert_int(data, density, zheights, no_time=False):
     """
     Calculates the vertical integration given 3-D data, air density,
