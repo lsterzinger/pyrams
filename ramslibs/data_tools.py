@@ -133,7 +133,8 @@ def flist_to_times(flist):
     times: list
         A list of times in datetime format.
     """
-    import datetime
+    from datetime import datetime
+    
     times = np.zeros(len(flist))
     for i in range(len(flist)):
         traw = flist[i].split("-")[2:6]
