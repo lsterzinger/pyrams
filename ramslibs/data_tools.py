@@ -418,7 +418,7 @@ def z_levels_2d(ztn, topt):
         2-D array of gridbox heights
     """
 
-    xlen = topt.shape[1]
+    xlen = topt.shape[0]
     zlen = len(ztn)
 
     zheight = np.zeros((zlen, xlen))
