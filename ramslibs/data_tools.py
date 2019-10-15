@@ -141,7 +141,7 @@ def flist_to_times(flist):
         traw = "".join(traw)
         times[i] = datetime.strptime(traw, "%Y%m%d%H%M%S")
 
-    return times
+    return times.astype(np.datetime64)
 
 
 def vert_int(data, density, zheights, no_time=False):
