@@ -31,6 +31,7 @@ class DataInfo():
         self.variable = variable
         self.longname = longname
         self.unit = unit
+        self.data = None
 
     def get_data(self, datadir, simulation):
         """
