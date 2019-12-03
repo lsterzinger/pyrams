@@ -4,6 +4,8 @@ from netCDF4 import Dataset as ncfile
 from matplotlib import pyplot as plt
 import xarray as xr
 import warnings
+from tqdm import tqdm
+
 
 
 class DataInfo():
@@ -108,7 +110,7 @@ class DataVar():
         self.data = np.zeros(dims)
 
         # Get data
-        for i in range(len(flist)):
+        for i in tqdm(range(len(flist))):
             ds = xr.open_dataset(flist[i])
             self.data[i, :] = ds[self.varname]
 

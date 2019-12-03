@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='ramslibs',
-      version='0.3',
+      version='0.4',
       description='Set of tools for working with RAMS data',
       author='Lucas Sterzinger',
       author_email='lsterzinger@ucdavis.edu',
@@ -12,5 +12,6 @@ setup(name='ramslibs',
           'matplotlib',
           'metpy',
           'glob2',
+          'tqdm'
       ]
       )
