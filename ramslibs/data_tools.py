@@ -118,6 +118,62 @@ class DataVar():
         self.data = None
 
 
+def fix_duplicate_dims(ds, duped_dims, phony_dim):
+    """
+    Fixes duplicate dimensions (often with the same amount of `x` and `y` gridpoints), 
+    for use with xarray.open_mfdataset and xarray.combine_nested.
+
+    Arguments
+    ---------
+    ds : xarray.Dataset
+        The dataset to be fixed
+
+    duped_dims : list
+        List of dimensions that are duplicated, in order (e.g. `['y', 'x']`)
+
+    phony_dim : string
+        Name of duplicate dimension in `ds`, often `'phony_dim_0'`
+
+    
+    Returns
+    -------
+    ds_new : xarray.Dataset
+        New dataset with fixed dimension names
+    """
+    dims = dict(ds.dims)
+    
+    try:
+        dupe_dim = dims[phony_dim]
+    except KeyError:
+        print(f'Error, duplicate dimension must be \'phony_dim_0\'')
+        return
+              
+    dims.pop(phony_dim)
+    
+    for d in duped_dims:
+        dims[d] = dupe_dim
+    
+    ds_new = xr.Dataset()
+    
+    for v in ds.variables:
+        dvar = ds[v]
+
+        # Check if phony_dim exists in variable dimensions
+        if phony_dim in dvar.dims:
+            vardims = list(dvar.dims)
+            indices = [i for i, x in enumerate(vardims) if x == phony_dim]
+            for i, ind in enumerate(indices):
+                vardims[ind] = duped_dims[i]
+            vardims = tuple(vardims)
+            
+            ds_new[v] = (vardims, ds[v])
+        
+        else:
+           vardims = dvar.dims
+           ds_new[v] = (vardims, ds[v])
+    return(ds_new)
+
+
 def flist_to_times(flist):
     """
     Creates a list of datetimes from a list of RAMS output
