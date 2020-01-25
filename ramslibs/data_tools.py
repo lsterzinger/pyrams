@@ -118,7 +118,28 @@ class DataVar():
         self.data = None
 
 
-def fix_dims(ds, duped_dims, phony_dim):
+def fix_duplicate_dims(ds, duped_dims, phony_dim):
+    """
+    Fixes duplicate dimensions (often with the same amount of `x` and `y` gridpoints), 
+    for use with xarray.open_mfdataset and xarray.combine_nested.
+
+    Arguments
+    ---------
+    ds : xarray.Dataset
+        The dataset to be fixed
+
+    duped_dims : list
+        List of dimensions that are duplicated, in order (e.g. `['y', 'x']`)
+
+    phony_dim : string
+        Name of duplicate dimension in `ds`, often `'phony_dim_0'`
+
+    
+    Returns
+    -------
+    ds_new : xarray.Dataset
+        New dataset with fixed dimension names
+    """
     dims = dict(ds.dims)
     
     try:
