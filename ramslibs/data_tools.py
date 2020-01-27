@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 import xarray as xr
 import warnings
 from tqdm import tqdm
+import pandas as pd
 
 
 
@@ -116,6 +117,18 @@ class DataVar():
 
     def purge_data(self):
         self.data = None
+
+def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim):
+    from ramslibs.data_tools import fix_duplicate_dims
+
+    for f in flist:
+        str_date = '-'.join(f.split('/')[-1].split("-")[2:6])
+        date = np.datetime64(pd.to_datetime(str_date))
+        ds = fix_duplicate_dims(xr.open_dataset(f), duped_dims, phony_dim)
+        ds = ds.expand({'time' : date})
+        ds.to_netcdf(f'{output_path}/dimfix_{str_date}.nc', unlimited_dims=['time'])
+        ds.close()
+    return
 
 
 def fix_duplicate_dims(ds, duped_dims, phony_dim):
