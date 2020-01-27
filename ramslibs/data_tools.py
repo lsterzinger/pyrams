@@ -171,6 +171,8 @@ def fix_duplicate_dims(ds, duped_dims, phony_dim):
         else:
            vardims = dvar.dims
            ds_new[v] = (vardims, ds[v])
+    
+    ds.close()
     return(ds_new)
 
 
