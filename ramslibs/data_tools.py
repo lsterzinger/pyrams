@@ -125,7 +125,7 @@ def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim):
         str_date = '-'.join(f.split('/')[-1].split("-")[2:6])
         date = np.datetime64(pd.to_datetime(str_date))
         ds = fix_duplicate_dims(xr.open_dataset(f), duped_dims, phony_dim)
-        ds = ds.expand({'time' : date})
+        ds = ds.expand_dims({'time' : [date]})
         ds.to_netcdf(f'{output_path}/dimfix_{str_date}.nc', unlimited_dims=['time'])
         ds.close()
     return
