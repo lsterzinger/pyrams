@@ -115,7 +115,7 @@ class DataVar():
         self.data = None
 
 def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim):
-    from ramslibs.data_tools import fix_duplicate_dims
+    import fix_duplicate_dims
 
     for f in flist:
         str_date = '-'.join(f.split('/')[-1].split("-")[2:6])
