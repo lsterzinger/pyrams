@@ -11,8 +11,9 @@ import pandas as pd
 
 class DataInfo():
     """
+    Deprecated. Please use `DataVar()`
+
     A class to handle model data
-    NOTE: Deprecated. Please use `DataVar()`
     
     Attributes
     ----------
@@ -22,7 +23,7 @@ class DataInfo():
         The long name of the variable (e.g. "Total Water Mixing Ratio")
     unit : str
         The unit of the variable (e.g. "kg/kg")
-    data : ndarray
+    data : numpy.ndarray
         The data array for the variable
     """
 
@@ -46,7 +47,7 @@ class DataInfo():
 
         Returns
         -------
-        data : ndarray
+        data : numpy.ndarray
             The data for the desired variable
         """
 
@@ -63,8 +64,8 @@ class DataVar():
     
     Parameters
     ----------
-    varname :
-        str The variable name as found in the data files (e.g. "RTP")
+    varname : str
+        The variable name as found in the data files (e.g. "RTP")
     longname : str
         Optional. The long name of the variable
         (e.g. "Total Water Mixing Ratio")
@@ -79,7 +80,7 @@ class DataVar():
         The long name of the variable (e.g. "Total Water Mixing Ratio")
     unit : str
         The unit of the variable (e.g. "kg/kg")
-    data : ndarray
+    data : numpy.ndarray
         The data for the variable
     """
 
@@ -115,6 +116,26 @@ class DataVar():
         self.data = None
 
 def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim):
+    """
+    Rewrites RAMS standard output files as netCDF4 with fixed dimension data, using 
+    ``data_tools.fix_duplicate_dims()``
+
+    Arguments
+    ---------
+    flist : list of str
+        A list of file paths (recommend using ``sorted(glob.glob('/path/to/files/*g1.h5'))`` or similar)
+
+    output_path : str
+        Path where new files will be written
+
+    duped_dims : list of str
+        List of dimensions that are duplicated, in order (e.g. `['y', 'x']`)
+
+    phony_dim : string
+        Name of duplicate dimension in `ds`, often `'phony_dim_0'`
+
+    """
+
     import fix_duplicate_dims
 
     for f in flist:
@@ -137,7 +158,7 @@ def fix_duplicate_dims(ds, duped_dims, phony_dim):
     ds : xarray.Dataset
         The dataset to be fixed
 
-    duped_dims : list
+    duped_dims : list of str
         List of dimensions that are duplicated, in order (e.g. `['y', 'x']`)
 
     phony_dim : string
@@ -221,22 +242,22 @@ def vert_int(data, density, zheights, no_time=False):
 
     Parameters
     -----------
-    data: ndarray
+    data: numpy.ndarray
         The data array. Can be in form (z, y, x), (z, x),
         (t, z, y, x), and (t, z, x)
 
-    density: ndarray
+    density: numpy.ndarray
         The air density, in (z, y, x) or (z, x)
 
-    zheights: ndarray
+    zheights: numpy.ndarray
         The height of the gridboxes, in (z, y, x) or (z, x)
 
-    no_time: Bool, optional
+    no_time: bool, optional
         Flag for indicating lack of time dimension. Default=False
 
     Returns
     -------
-    data_int: ndarray
+    data_int: numpy.ndarray
         The vertically integrated array. Same dimensions as `data` except
         without the 'z' dimension
     """
@@ -314,22 +335,22 @@ def press_level(pressure, heights, plevels, no_time=False):
 
     Parameters
     ----------
-    pressure : ndarray
+    pressure : numpy.ndarray
          The 3-D pressure field (assumes time dimension, turn off
          with `no_time=True`)
 
-    heights : ndarray
+    heights : numpy.ndarray
         The 3-D array of gridbox heights
 
     plevels : list
         List of pressure levels to interpolate to
 
-    no_time=False: boolean
+    no_time=False: bool 
         Optional, set to `True` to indicate lack of time dimension.
 
     Returns
     -------
-    press_height : ndarray
+    press_height : numpy.ndarray
         The geopotential heights at the specified pressure levels
     """
     from metpy.interpolate import log_interpolate_1d
@@ -371,15 +392,15 @@ def calc_height(topt, ztn):
 
     Parameters
     ----------
-    topt : ndarray
+    topt : numpy.ndarray
         The 2-D topographic height information
         
-    ztn : ndarray
+    ztn : numpy.ndarray
         The ztn variable from the *head.txt files output from RAMS
 
     Returns
     -------
-    z : ndarray
+    z : numpy.ndarray
         A 3-D array of the heights of each gridbox
     """
     ylen, xlen = topt.shape
@@ -448,12 +469,12 @@ def z_levels_3d(ztn, topt):
     ztn : list
         List of ztn values from RAMS *head.txt output
 
-    topt : ndarray
+    topt : numpy.ndarray
         2-D array of topography height values
 
     Returns
     -------
-    zheight : ndarray
+    zheight : numpy.ndarray
         3-D array of gridbox heights
     """
 
@@ -479,12 +500,12 @@ def z_levels_2d(ztn, topt):
     ztn : list
         List of ztn values from RAMS *head.txt output
 
-    topt : ndarray
+    topt : numpy.ndarray
         1-D array of topography height values
 
     Returns
     -------
-    zheight : ndarray
+    zheight : numpy.ndarray
         2-D array of gridbox heights
     """
 
@@ -506,12 +527,12 @@ def pressure(pi):
 
     Parameters
     ----------
-    pi : ndarray
+    pi : numpy.ndarray
         PI (modified exner function) from RAMS model output
 
     Returns
     -------
-    pressure : ndarray
+    pressure : numpy.ndarray
         Pressure (millibars)
     """
 
@@ -528,18 +549,18 @@ def temperature(theta, pi, degc=False):
     
     Parameters
     ----------
-    theta : ndarray
+    theta : numpy.ndarray
         THETA (potential temperature) variable from RAMS output
 
-    pi : ndarray
+    pi : numpy.ndarray
         PI (modified exner function) from RAMS output
 
-    degc=False : boolean
+    degc=False : bool
         Optional, set to `True` to output temperature in Celsius instead of Kelvin
 
     Returns
     -------
-    temperature : ndarray
+    temperature : numpy.ndarray
         The temperature in Kelvin (or Celsius if `degc=True`)
     """
     cp = 1004.
@@ -557,18 +578,18 @@ def mslp(temp, press, height):
 
     Parameters
     ------
-    temp : ndarray
+    temp : numpy.ndarray
         Temperature in Celsius
 
-    press: ndarray
+    press: numpy.ndarray
         Pressure in hPa
 
-    height: ndarray
+    height: numpy.ndarray
         height of the terrain in meters
 
     Returns
     -------
-    p0 : ndarray
+    p0 : numpy.ndarray
         The MSLP pressure (hPa)
     """
     # p0 = press*(1-(0.0065*height)/(temp + 0.0065*height + 273.15))**-5.257

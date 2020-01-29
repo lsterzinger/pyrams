@@ -33,13 +33,21 @@ release = '0.5'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.viewcode'
 ]
 
 master_doc = 'index'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
+
+intersphinx_mapping = {
+    'python' : ('https://docs.python.org/3', None),
+    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
+    'xarray': ('https://xarray.pydata.org/en/stable/', None)
+}
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
