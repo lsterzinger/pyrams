@@ -14,8 +14,6 @@ class DataInfo():
     A class to handle model data
     NOTE: Deprecated. Please use `DataVar()`
     
-    ...
-
     Attributes
     ----------
     variable : str
@@ -63,8 +61,6 @@ class DataVar():
     A new class created to manage variables, their names, and units
     (replaces `DataInfo`)
     
-    ...
-
     Parameters
     ----------
     varname :
@@ -196,7 +192,7 @@ def flist_to_times(flist):
 
     Note: This only works if there are no hyphens ('-') in the
     folder names.
-.
+
     Parameters
     ----------
     flilst: list
