@@ -16,11 +16,3 @@ Currently the only module is ``ramslibs.data_tools``
     
    fixdims
    apiref
-
-Useful Information
-==================
-
-* :ref:`apiref`
-* :ref:`fixdims`
-* :ref:`modules`
-* :ref:`search`
