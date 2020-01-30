@@ -8,7 +8,7 @@ RAMSlibs Home
 Welcome to the home of RAMSlibs! This collection of tools was created by Lucas Sterzinger (lsterzinger@ucdavis.edu) to 
 ease the process of working with `RAMS <https://vandenheever.atmos.colostate.edu/vdhpage/rams.php>`_ model output.
 
-Currently the only module is `ramslibs.data_tools`
+Currently the only module is ``ramslibs.data_tools``
 
 .. toctree::
    :maxdepth: 2
@@ -17,9 +17,10 @@ Currently the only module is `ramslibs.data_tools`
    fixdims
    apiref
 
-Indices and tables
+Useful Information
 ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
+* :ref:`apiref`
+* :ref:`fixdims`
+* :ref:`modules`
 * :ref:`search`
