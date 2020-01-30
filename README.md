@@ -7,4 +7,5 @@ Install with:
 ```
 pip install ramslibs
 ``` 
+Documentation can be [found here](https://ramslibs.readthedocs.io/en/latest)
 RAMSlibs is distributed under an [MIT License](LICENSE)
