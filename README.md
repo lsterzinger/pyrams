@@ -5,7 +5,6 @@
 
 Install with:
 ```
-git clone git@github.com:lsterzinger/ramslibs.git
-cd ramslibs
-pip install .
+pip install ramslibs
 ``` 
+RAMSlibs is distributed under an [MIT License](LICENSE)
