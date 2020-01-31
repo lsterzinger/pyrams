@@ -115,7 +115,7 @@ class DataVar():
     def purge_data(self):
         self.data = None
 
-def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim):
+def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim, prefix='dimfix'):
     """
     Rewrites RAMS standard output files as netCDF4 with fixed dimension data, using 
     ``data_tools.fix_duplicate_dims()``
@@ -129,11 +129,13 @@ def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim):
         Path where new files will be written
 
     duped_dims : list of str
-        List of dimensions that are duplicated, in order (e.g. `['y', 'x']`)
+        List of dimensions that are duplicated, in order (e.g. ``['y', 'x']``)
 
     phony_dim : string
-        Name of duplicate dimension in `ds`, often `'phony_dim_0'`
+        Name of duplicate dimension in `ds`, often ``phony_dim_0``
 
+    prefix : string
+        Prefix for output files, defaults to `dimfix`
     """
 
     import fix_duplicate_dims
@@ -143,7 +145,7 @@ def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim):
         date = np.datetime64(pd.to_datetime(str_date))
         ds = fix_duplicate_dims(xr.open_dataset(f), duped_dims, phony_dim)
         ds = ds.expand_dims({'time' : [date]})
-        ds.to_netcdf(f'{output_path}/dimfix_{str_date}.nc', unlimited_dims=['time'])
+        ds.to_netcdf(f'{output_path}/{prefix}_{str_date}.nc', unlimited_dims=['time'])
         ds.close()
     return
 
