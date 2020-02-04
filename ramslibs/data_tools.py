@@ -138,8 +138,6 @@ def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim, prefix='dimfix'
         Prefix for output files, defaults to `dimfix`
     """
 
-    import fix_duplicate_dims
-
     for f in flist:
         str_date = '-'.join(f.split('/')[-1].split("-")[2:6])
         date = np.datetime64(pd.to_datetime(str_date))
