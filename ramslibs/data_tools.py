@@ -138,7 +138,7 @@ def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim, prefix='dimfix'
         Prefix for output files, defaults to `dimfix`
     """
 
-    for f in flist:
+    for f in tqdm(flist):
         str_date = '-'.join(f.split('/')[-1].split("-")[2:6])
         date = np.datetime64(pd.to_datetime(str_date))
         ds = fix_duplicate_dims(xr.open_dataset(f), duped_dims, phony_dim)
