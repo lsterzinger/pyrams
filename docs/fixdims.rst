@@ -16,4 +16,26 @@ However, since ``x=y=32``, RAMS assigns the dimension ``phony_dim_0`` to both x 
 `xr.open_mfdataset() <http://xarray.pydata.org/en/stable/generated/xarray.open_mfdataset.html>`_
 
 RAMSlibs has two ways of overcoming this problem. The first is to rebuild the ``xr.Dataset`` with the correct dimenions 
-using `fix_duplicate_dims <apiref.html#ramslibs.data_tools.fix_duplicate_dims>`_
+using `fix_duplicate_dims <apiref.html#ramslibs.data_tools.fix_duplicate_dims>`/
+
+
+.. code-block:: python
+
+    from ramslibs.data_tools import fix_duplicate_dims
+
+    ds = xr.open_dataset('./dataset.h5')
+
+    # This line will replace 'phony_dim_0' with 'x' and 'y'
+    ds_new = fix_duplicate_dims(ds, ['y', 'x'], 'phony_dim_0')
+
+
+You can also rewrite a list of RAMS output files into netCDF with renamed dimensions:
+
+.. code-block:: python
+
+    from ramslibs.data_tools import rewrite_to_netcdf
+    from glob import glob
+
+    flist = glob('/path/to/files/*.h5')
+    rewrite_to_netcdf(flist, '/path/to/write/files/', ['y', 'x'], 'phony_dim_0', prefix='dimfix') 
+    # prefix is optional, and defaults to 'dimfix'
