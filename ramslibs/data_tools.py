@@ -1,4 +1,4 @@
-"""Contains a ."""
+"""Contains a collections of functions for working with RAMS data in Python"""
 import numpy as np
 from netCDF4 import Dataset as ncfile
 from matplotlib import pyplot as plt
