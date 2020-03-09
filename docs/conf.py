@@ -22,7 +22,7 @@ copyright = '2020, Lucas Sterzinger'
 author = 'Lucas Sterzinger'
 
 # The full version, including alpha/beta/rc tags
-release = '0.5'
+release = '0.5.1'
 
 
 # -- General configuration ---------------------------------------------------

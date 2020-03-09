@@ -14,5 +14,4 @@ ease the process of working with `RAMS <https://vandenheever.atmos.colostate.edu
    :caption: Contents:
     
    fixdims
-   data_tools
-   thermo
+   api/index
