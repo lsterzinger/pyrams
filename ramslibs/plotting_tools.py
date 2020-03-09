@@ -9,6 +9,8 @@ def _find_side(ls, side):
     """
     Given a shapely LineString which is assumed to be rectangular, return the
     line corresponding to a given side of the rectangle.
+
+    Taken from https://gist.github.com/ajdawson/dd536f786741e987ae4e
     """
     minx, miny, maxx, maxy = ls.bounds
     points = {'left': [(minx, miny), (minx, maxy)],
@@ -21,7 +23,9 @@ def _find_side(ls, side):
 def lambert_xticks(ax, ticks):
     """
     Draw ticks on the bottom x-axis of a Lambert Conformal projection.
-    
+
+    Taken from https://gist.github.com/ajdawson/dd536f786741e987ae4e
+
     Arguments
     ---------
     ax : matplotlib.axis
@@ -43,6 +47,8 @@ def lambert_yticks(ax, ticks):
     """
     Draw ticks on the left y-axis of a Lambert Conformal projection.
     
+    Taken from https://gist.github.com/ajdawson/dd536f786741e987ae4e
+
     Arguments
     ---------
     ax : matplotlib.axis
@@ -60,7 +66,11 @@ def lambert_yticks(ax, ticks):
     ax.set_yticklabels([ax.yaxis.get_major_formatter()(ytick) for ytick in yticklabels])
 
 def _lambert_ticks(ax, ticks, tick_location, line_constructor, tick_extractor):
-    """Get the tick locations and labels for an axis of a Lambert Conformal projection."""
+    """
+    Get the tick locations and labels for an axis of a Lambert Conformal projection.
+    
+    Taken from https://gist.github.com/ajdawson/dd536f786741e987ae4e
+    """
     outline_patch = sgeom.LineString(ax.outline_patch.get_path().vertices.tolist())
     axis = _find_side(outline_patch, tick_location)
     n_steps = 30
