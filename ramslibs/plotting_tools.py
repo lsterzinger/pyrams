@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 import shapely.geometry as sgeom
+from copy import copy
 
 def _find_side(ls, side):
     """
