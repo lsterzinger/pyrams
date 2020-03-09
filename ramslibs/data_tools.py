@@ -1,4 +1,4 @@
-"""Contains a collection of functions for derived variables."""
+"""Contains a ."""
 import numpy as np
 from netCDF4 import Dataset as ncfile
 from matplotlib import pyplot as plt
@@ -6,7 +6,8 @@ import xarray as xr
 import warnings
 from tqdm import tqdm
 import pandas as pd
-
+from datetime import datetime
+from metpy.interpolate import log_interpolate_1d
 
 
 class DataInfo():
@@ -224,7 +225,6 @@ def flist_to_times(flist):
     times: list
         A list of times in datetime format.
     """
-    from datetime import datetime
 
     times = np.zeros(len(flist), dtype=datetime)
     for i in range(len(flist)):
@@ -353,7 +353,6 @@ def press_level(pressure, heights, plevels, no_time=False):
     press_height : numpy.ndarray
         The geopotential heights at the specified pressure levels
     """
-    from metpy.interpolate import log_interpolate_1d
 
     if no_time is False:
         try:
@@ -412,52 +411,6 @@ def calc_height(topt, ztn):
         for y in range(0, ylen):
             z[:, y, x] = ztn * (1 - (topt[y, x]/ztop)) + topt[y, x]
     return z
-
-
-# def plot_domain2(variable, lats, lons, tmax):
-#     from mpl_toolkits.basemap import Basemap
-
-#     centlat = 38.2
-#     centlon = -122.1
-#     width = 925000
-#     height = 700000
-#     plt.ioff()
-#     for t in range(0, tmax):
-#         plt.figure(figsize=(12, 12))
-#         m = Basemap(projection='stere', lon_0=centlon, lat_0=centlat,
-#                     lat_ts=centlat, width=width, height=height)
-
-#         m.drawcoastlines()
-#         m.drawstates()
-#         m.drawcountries()
-#         parallels = np.arange(0., 90, 10.)
-#         m.drawparallels(parallels, labels=[1, 0, 0, 0], fontsize=10)
-#         meridians = np.arange(180., 360, 10.)
-#         m.drawmeridians(meridians, labels=[0, 0, 0, 1], fontsize=10)
-
-#         x, y = m(lons, lats)
-#         m.contourf(x, y, variable[t, :, :])
-#         plt.savefig(str(t) + ".png")
-
-
-# def vert_int(variable, dimensions):
-#     xmax = dimensions[0]
-#     ymax = dimensions[1]
-#     zmax = dimensions[2]
-#     tmax = dimensions[3]
-
-#     var_out = np.zeros((tmax, ymax, xmax))
-
-#     for t in range(0, tmax):
-#         for x in range(0, xmax):
-#             for y in range(0, ymax):
-#                 col_tot = 0
-
-#                 for z in range(0, zmax):
-#                     col_tot = col_tot + variable[t, z, y, x]
-#                 var_out[t, y, x] = col_tot
-
-#     return var_out
 
 
 def z_levels_3d(ztn, topt):
@@ -541,58 +494,3 @@ def pressure(pi):
     R = 287.
 
     return p0*np.power((pi/cp), (cp/R))
-
-
-def temperature(theta, pi, degc=False):
-    """
-    Calculate the temperature from Exner function using THETA and PI.
-    
-    Parameters
-    ----------
-    theta : numpy.ndarray
-        THETA (potential temperature) variable from RAMS output
-
-    pi : numpy.ndarray
-        PI (modified exner function) from RAMS output
-
-    degc=False : bool
-        Optional, set to `True` to output temperature in Celsius instead of Kelvin
-
-    Returns
-    -------
-    temperature : numpy.ndarray
-        The temperature in Kelvin (or Celsius if `degc=True`)
-    """
-    cp = 1004.
-
-    temp = theta*(pi/cp)
-    if degc is True:
-        temp = temp - 273.15
-
-    return(temp)
-
-
-def mslp(temp, press, height):
-    """
-    Calculate the mean sea level pressure
-
-    Parameters
-    ------
-    temp : numpy.ndarray
-        Temperature in Celsius
-
-    press: numpy.ndarray
-        Pressure in hPa
-
-    height: numpy.ndarray
-        height of the terrain in meters
-
-    Returns
-    -------
-    p0 : numpy.ndarray
-        The MSLP pressure (hPa)
-    """
-    # p0 = press*(1-(0.0065*height)/(temp + 0.0065*height + 273.15))**-5.257
-    p0 = press * (1-(0.0065*height)/(temp+0.0065*height + 273.15))**-5.257
-
-    return(p0)

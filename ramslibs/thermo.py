@@ -1,3 +1,4 @@
+""" Contains functions for derived thermodynamic variables """
 cp = 1004
 R = 287
 p0 = 1000
@@ -117,3 +118,29 @@ def rh(rv, theta, pi):
     rh = rv/ws * 100
 
     return rh
+
+
+def mslp(temp, press, height):
+    """
+    Calculate the mean sea level pressure
+
+    Parameters
+    ------
+    temp : numpy.ndarray
+        Temperature in Celsius
+
+    press: numpy.ndarray
+        Pressure in hPa
+
+    height: numpy.ndarray
+        height of the terrain in meters
+
+    Returns
+    -------
+    p0 : numpy.ndarray
+        The MSLP pressure (hPa)
+    """
+    # p0 = press*(1-(0.0065*height)/(temp + 0.0065*height + 273.15))**-5.257
+    p0 = press * (1-(0.0065*height)/(temp+0.0065*height + 273.15))**-5.257
+
+    return(p0)

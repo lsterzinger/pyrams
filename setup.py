@@ -17,5 +17,4 @@ setuptools.setup(name='ramslibs',
           'Intended Audience :: Science/Research',
           'Topic :: Scientific/Engineering :: Atmospheric Science',
           'Development Status :: 4 - Beta'
-      ]
-      )
+      ])
