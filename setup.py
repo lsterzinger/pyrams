@@ -4,7 +4,7 @@ with open('README.md', 'r') as fh:
     long_description=fh.read()
 
 setuptools.setup(name='ramslibs',
-      version='0.6.1',
+      version='0.6.2',
       description='Set of tools for working with RAMS data',
       long_description=long_description,
       long_description_content='text/markdown',
