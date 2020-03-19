@@ -15,7 +15,7 @@ class DataInfo():
     Deprecated. Please use `DataVar()`
 
     A class to handle model data
-    
+
     Attributes
     ----------
     variable : str
@@ -62,7 +62,7 @@ class DataVar():
     """
     A new class created to manage variables, their names, and units
     (replaces `DataInfo`)
-    
+
     Parameters
     ----------
     varname : str
@@ -116,7 +116,8 @@ class DataVar():
     def purge_data(self):
         self.data = None
 
-def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim, prefix='dimfix'):
+
+def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim, prefix='dimfix', single_file=False, compression_level=None):
     """
     Rewrites RAMS standard output files as netCDF4 with fixed dimension data, using 
     ``data_tools.fix_duplicate_dims()``
@@ -137,15 +138,51 @@ def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim, prefix='dimfix'
 
     prefix : string
         Prefix for output files, defaults to `dimfix`
-    """
 
+    single_file : bool (optional)
+        If `True`, will combine all files into a single file with name `<prefix>.nc`. Defaults to `False`.
+
+    compression_level : int
+        If specified, data will be compressed on the given level (0-9 are valid). Defaults to `None`
+    """
+    dslist = []
     for f in tqdm(flist):
         str_date = '-'.join(f.split('/')[-1].split("-")[2:6])
         date = np.datetime64(pd.to_datetime(str_date))
-        ds = fix_duplicate_dims(xr.open_dataset(f), duped_dims, phony_dim)
-        ds = ds.expand_dims({'time' : [date]})
-        ds.to_netcdf(f'{output_path}/{prefix}_{str_date}.nc', unlimited_dims=['time'])
+
+        if duped_dims:
+            ds = fix_duplicate_dims(xr.open_dataset(f), duped_dims, phony_dim)
+
+        else:
+            ds = xr.open_dataset(f)
+
+        ds = ds.expand_dims({'time': [date]})
+
+        if not single_file:
+            ds.to_netcdf(f'{output_path}/{prefix}_{str_date}.nc',
+                         unlimited_dims=['time'])
+
+        if single_file:
+            dslist.append(ds)
+
         ds.close()
+
+    if single_file:
+        ds = xr.concat(dslist, dim='time')
+        encoding = None
+
+        # If compression_level is defined, compress files
+        if compression_level:
+
+            # Catch invalid values
+            if type(compression_level) is not int or compression_level < 0 or compression_level > 9:
+                raise ValueError(
+                    "compression_level must be an integer between 0 and 9 (inclusive)")
+
+            comp = dict(zlib=True, complevel=compression_level)
+            encoding = {var: comp for var in ds.data_vars}
+
+        ds.to_netcdf(f"{output_path}/{prefix}.nc", encoding=encoding)
     return
 
 
@@ -165,27 +202,27 @@ def fix_duplicate_dims(ds, duped_dims, phony_dim):
     phony_dim : string
         Name of duplicate dimension in `ds`, often `'phony_dim_0'`
 
-    
+
     Returns
     -------
     ds_new : xarray.Dataset
         New dataset with fixed dimension names
     """
     dims = dict(ds.dims)
-    
+
     try:
         dupe_dim = dims[phony_dim]
     except KeyError:
         print(f'Error, duplicate dimension must be \'phony_dim_0\'')
         return
-              
+
     dims.pop(phony_dim)
-    
+
     for d in duped_dims:
         dims[d] = dupe_dim
-    
+
     ds_new = xr.Dataset()
-    
+
     for v in ds.variables:
         dvar = ds[v]
 
@@ -196,13 +233,13 @@ def fix_duplicate_dims(ds, duped_dims, phony_dim):
             for i, ind in enumerate(indices):
                 vardims[ind] = duped_dims[i]
             vardims = tuple(vardims)
-            
+
             ds_new[v] = (vardims, ds[v])
-        
+
         else:
-           vardims = dvar.dims
-           ds_new[v] = (vardims, ds[v])
-    
+            vardims = dvar.dims
+            ds_new[v] = (vardims, ds[v])
+
     ds.close()
     return(ds_new)
 
@@ -393,7 +430,7 @@ def calc_height(topt, ztn):
     ----------
     topt : numpy.ndarray
         The 2-D topographic height information
-        
+
     ztn : numpy.ndarray
         The ztn variable from the *head.txt files output from RAMS
 
