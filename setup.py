@@ -1,10 +1,19 @@
 import setuptools
+import re
+VERSIONFILE = "ramslibs/_version.py"
+verstrline = open(VERSIONFILE, "rt").read()
+VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
+mo = re.search(VSRE, verstrline, re.M)
+if mo:
+    verstr = mo.group(1)
+else:
+    raise RuntimeError("Unable to find version string in %s." % (VERSIONFILE,))
 
 with open('README.md', 'r') as fh:
     long_description=fh.read()
 
 setuptools.setup(name='ramslibs',
-      version='0.6.2',
+      version=verstr,
       description='Set of tools for working with RAMS data',
       long_description=long_description,
       long_description_content='text/markdown',

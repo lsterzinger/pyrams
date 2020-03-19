@@ -15,6 +15,16 @@ import sys
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
 
+import re
+VERSIONFILE="../ramslibs/_version.py"
+verstrline = open(VERSIONFILE, "rt").read()
+VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
+mo = re.search(VSRE, verstrline, re.M)
+if mo:
+    verstr = mo.group(1)
+else:
+    raise RuntimeError("Unable to find version string in %s." % (VERSIONFILE,))
+
 # -- Project information -----------------------------------------------------
 
 project = 'RAMSlibs'
@@ -22,7 +32,7 @@ copyright = '2020, Lucas Sterzinger'
 author = 'Lucas Sterzinger'
 
 # The full version, including alpha/beta/rc tags
-release = '0.6.1'
+release = verstr
 
 
 # -- General configuration ---------------------------------------------------
