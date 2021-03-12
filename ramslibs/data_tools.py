@@ -8,7 +8,7 @@ from tqdm import tqdm
 import pandas as pd
 from datetime import datetime
 from metpy.interpolate import log_interpolate_1d
-
+import re
 
 class DataInfo():
     """
@@ -249,8 +249,8 @@ def flist_to_times(flist):
     Creates a list of datetimes from a list of RAMS output
     variables.
 
-    Note: This only works if there are no hyphens ('-') in the
-    folder names.
+    Function uses regex to find the pattern "YYYY-mm-dd-HHMMSS" in
+    the file path and converts to a np.datetime64 object.
 
     Parameters
     ----------
@@ -260,14 +260,24 @@ def flist_to_times(flist):
     Returns
     -------
     times: list
-        A list of times in datetime format.
+        A list of times in np.datetime64 format.
     """
+    dtregex = r"[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{6}"
 
     times = np.zeros(len(flist), dtype=datetime)
-    for i in range(len(flist)):
-        traw = flist[i].split("-")[2:6]
-        traw = "".join(traw)
-        times[i] = datetime.strptime(traw, "%Y%m%d%H%M%S")
+    for i,f in enumerate(flist):
+        print(f)
+        tarr = re.findall(dtregex, f)
+        if tarr == []:
+            raise SyntaxError(f"No datetimes of form \"YYYY-MM-DD-HHMMSS\" were found in {f}")
+        print(tarr)
+        if len(tarr) == 1:
+            traw = tarr[0]
+        else:
+            raise SyntaxError(f"More than one date found in path {f}")
+
+        traw = tarr[0]
+        times[i] = datetime.strptime(traw, "%Y-%m-%d-%H%M%S")
 
     return times.astype(np.datetime64)
 
