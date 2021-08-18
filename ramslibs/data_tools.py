@@ -266,11 +266,11 @@ def flist_to_times(flist):
 
     times = np.zeros(len(flist), dtype=datetime)
     for i,f in enumerate(flist):
-        print(f)
+
         tarr = re.findall(dtregex, f)
         if tarr == []:
             raise SyntaxError(f"No datetimes of form \"YYYY-MM-DD-HHMMSS\" were found in {f}")
-        print(tarr)
+
         if len(tarr) == 1:
             traw = tarr[0]
         else:
