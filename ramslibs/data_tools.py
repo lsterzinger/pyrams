@@ -282,6 +282,65 @@ def flist_to_times(flist):
     return times.astype(np.datetime64)
 
 
+def create_xr_metadata(
+    ds,
+    flist = None,
+    dims = {
+        'phony_dim_0' : 'x',
+        'phony_dim_1' : 'y',
+        'phony_dim_2' : 'z'
+    },
+    dx = None,
+    dz = None,
+    z = None
+):
+    """
+    Adds metadata to ``xr.Dataset()``.
+
+    Parameters
+    ----------
+    ds: ``xarray.Dataset``
+        Dataset
+    
+    flist: List of file paths, optional
+        List of filepaths, used to add datetimes to time dimension
+
+    dims: dict, optional
+        Dict of dims to rename
+
+    dx: float, optional
+        dx to add values to ``(x,y)`` dimensions
+    
+    dz: float, optional
+        dz to add values to ``z`` dimension
+
+    z: list, optional
+        List of explicit ``z`` values to add to dimension
+
+    Returns
+    -------
+    ds: ``xr.Dataset()``
+    """
+    
+    ds = ds.rename(dims)
+
+    if flist is not None:
+        ds['time'] = flist_to_times(flist)
+
+    if dx is not None:
+        ds['x'] = np.arange(0, len(ds.x)) * dx
+        ds['y'] = np.arange(0, len(ds.y)) * dx
+    
+    if dz is not None:
+        ds['z'] = np.arange(0, len(ds.z)) * dz
+
+    if z is not None:
+        ds['z'] = x
+
+    return ds
+
+
+
 def vert_int(data, density, zheights, no_time=False):
     """
     Calculates the vertical integration given 3-D data, air density,
