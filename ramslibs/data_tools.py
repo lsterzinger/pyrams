@@ -266,11 +266,11 @@ def flist_to_times(flist):
 
     times = np.zeros(len(flist), dtype=datetime)
     for i,f in enumerate(flist):
-        print(f)
+
         tarr = re.findall(dtregex, f)
         if tarr == []:
             raise SyntaxError(f"No datetimes of form \"YYYY-MM-DD-HHMMSS\" were found in {f}")
-        print(tarr)
+
         if len(tarr) == 1:
             traw = tarr[0]
         else:
@@ -280,6 +280,67 @@ def flist_to_times(flist):
         times[i] = datetime.strptime(traw, "%Y-%m-%d-%H%M%S")
 
     return times.astype(np.datetime64)
+
+
+def create_xr_metadata(
+    ds,
+    flist = None,
+    dims = {
+        'phony_dim_0' : 'x',
+        'phony_dim_1' : 'y',
+        'phony_dim_2' : 'z'
+    },
+    dx = None,
+    dz = None,
+    z = None
+):
+    """
+    Adds metadata to ``xr.Dataset()``.
+
+    Parameters
+    ----------
+    ds: ``xarray.Dataset``
+        Dataset
+    
+    flist: List of file paths, optional
+        List of filepaths, used to add datetimes to time dimension
+
+    dims: dict, optional
+        Dict of dims to rename
+
+    dx: float, optional
+        dx to add values to ``(x,y)`` dimensions
+    
+    dz: float, optional
+        dz to add values to ``z`` dimension
+
+    z: list, optional
+        List of explicit ``z`` values to add to dimension
+    """
+
+    Returns
+    -------
+    times: list
+        A list of times in np.datetime64 format.
+
+    """
+    ds = ds.rename(dims)
+
+    if flist is not None:
+        ds['time'] = flist_to_times(flist)
+
+    if dx is not None:
+        ds['x'] = np.arange(0, len(ds.x)) * dx
+        ds['y'] = np.arange(0, len(ds.y)) * dx
+    
+    if dz is not None:
+        ds['z'] = np.arange(0, len(ds.z)) * dz
+
+    if z is not None:
+        ds['z'] = x
+
+    return ds
+
 
 
 def vert_int(data, density, zheights, no_time=False):
