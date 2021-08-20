@@ -306,7 +306,13 @@ def create_xr_metadata(
         List of filepaths, used to add datetimes to time dimension
 
     dims: dict, optional
-        Dict of dims to rename
+        Dict of dims to rename. defaults to ::
+
+            dims = {
+                'phony_dim_0' : 'x',
+                'phony_dim_1' : 'y',
+                'phony_dim_2' : 'z'
+            }
 
     dx: float, optional
         dx to add values to ``(x,y)`` dimensions

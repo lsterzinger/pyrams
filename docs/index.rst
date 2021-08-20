@@ -14,5 +14,6 @@ Check out the `code on GitHub! <https://github.com/lsterzinger/ramslibs>`_
    :maxdepth: 2
    :caption: Contents:
     
-   api/index
+   xarray_metadata
    fixdims
+   api/index
