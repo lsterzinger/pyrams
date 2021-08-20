@@ -24,6 +24,7 @@ and populates them with the correct values. For example:
     )
 
 The ``create_xr_metadata`` function:
+    * Renames ``phony_dim_0``, ``phony_dim_1``, and ``phony_dim_2`` to ``x``, ``y``, and ``z``
     * Uses ``flist`` to generate datetimes from the filenames, and adds them to the ``time`` coordinate
     * Uses ``dx`` to generate x/y coordinates
     * Uses ``dz`` to generate z coordinates
