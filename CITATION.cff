@@ -1,0 +1,9 @@
+cff-version: 1.1.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Lucas
+    given-names: Sterzinger
+    orcid: https://orcid.org/0000-0003-3321-4534
+title: lsterzinger/ramslibs: RAMSLibs 0.6.5
+version: v0.6.5
+date-released: 2017-12-18
