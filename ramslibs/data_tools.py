@@ -117,6 +117,47 @@ class DataVar():
         self.data = None
 
 
+def domain_mean_to_netcdf(ds_with_metadata, outfile, vars=None):
+    """
+    Writes x/y domain-average from from an xarray dataset to `outfile` as NetCDF.
+
+    Arguments
+    ---------
+    ds_with_metadata : xr.Dataset
+        An xarray dataset created with `ramslibs.datatools.create_xr_dataset()`
+
+    outfile : str
+        Name of output file
+    
+    vars : list (optional)
+        List of variable names to write. Default is to process and write all variables
+    """
+
+    from os.path import exists
+    from tqdm import tqdm
+
+    ds = ds_with_metadata
+
+    if vars is None:
+        vars = [i for i in ds.data_vars]
+
+    if exists(outfile):
+        raise Exception(f"Error: {outfile} already exists")
+                        
+    for v in tqdm(vars):
+        try:
+
+            a = ds[v].mean(dim=('x', 'y'))
+            if exists(outfile):
+                mode = 'a'
+            else:
+                mode = 'w'
+            a.to_netcdf(outfile, mode=mode)
+            # print(a)
+        except ValueError:
+            print(f"Variable {f} ")
+            continue
+
 def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim, prefix='dimfix', single_file=False, compression_level=None):
     """
     Rewrites RAMS standard output files as netCDF4 with fixed dimension data, using 
