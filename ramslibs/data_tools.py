@@ -117,7 +117,7 @@ class DataVar():
         self.data = None
 
 
-def domain_mean_to_netcdf(ds_with_metadata, outfile, vars=None):
+def domain_mean_netcdf(ds_with_metadata, outfile, vars=None):
     """
     Writes x/y domain-average from from an xarray dataset to `outfile` as NetCDF.
 
