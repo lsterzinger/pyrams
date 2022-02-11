@@ -345,27 +345,20 @@ def parse_txt(file):
     return zmn, ymn, xmn
 
 def create_xr_metadata(
-    ds,
-    flist = None,
+    path_to_files,
     dims = {
         'phony_dim_0' : 'x',
         'phony_dim_1' : 'y',
         'phony_dim_2' : 'z'
     },
-    dx = None,
-    dz = None,
-    z = None
-):
+    xr_kwargs=None):
     """
     Adds metadata to ``xr.Dataset()``.
 
     Parameters
-    ----------
-    ds: ``xarray.Dataset``
-        Dataset
-    
-    flist: List of file paths, optional
-        List of filepaths, used to add datetimes to time dimension
+    ----------    
+    path_to_files: str
+        Path to folder containing data files
 
     dims: dict, optional
         Dict of dims to rename. defaults to ::
@@ -376,35 +369,28 @@ def create_xr_metadata(
                 'phony_dim_2' : 'z'
             }
 
-    dx: float, optional
-        dx to add values to ``(x,y)`` dimensions
-    
-    dz: float, optional
-        dz to add values to ``z`` dimension
-
-    z: list, optional
-        List of explicit ``z`` values to add to dimension
-
+    xr_kwargs: dict, optional
+        kwargs to pass to `xr.open_mfdataset()`
     Returns
     -------
     ds: ``xr.Dataset()``
     """
-    
+
+    from glob import glob
+    import xarray as xr
+
+    flist = sorted(glob(path_to_files + '/*.h5'))
+    txtlist = sorted(glob(path_to_files + "/*.txt"))
+    txt = txtlist[0]
+    z,y,x = parse_txt(txt)
+    ds = xr.open_mfdataset(flist, combine='nested', concat_dim='time', **xr_kwargs)
+
     ds = ds.rename(dims)
-
-    if flist is not None:
-        ds['time'] = flist_to_times(flist)
-
-    if dx is not None:
-        ds['x'] = np.arange(0, len(ds.x)) * dx
-        ds['y'] = np.arange(0, len(ds.y)) * dx
-    
-    if dz is not None:
-        ds['z'] = np.arange(0, len(ds.z)) * dz
-
-    if z is not None:
-        ds['z'] = z
-
+    ds['time'] = flist_to_times(flist)
+    ds['z'] = z
+    ds['y'] = y
+    ds['x'] = x
+     
     return ds
 
 
