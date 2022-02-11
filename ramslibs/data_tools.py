@@ -323,6 +323,26 @@ def flist_to_times(flist):
 
     return times.astype(np.datetime64)
 
+def parse_txt(file):
+    with open(file) as inf:
+        Lines = inf.readlines()
+
+    for i,l in enumerate(Lines):
+        if l == '__zmn01\n':
+            i1 = i+2
+            di = int(Lines[i+1])
+            zmn = [float(a) for a in Lines[i1:i1+di]]
+        
+        elif l == '__xmn01\n':
+            i1 = i+2
+            di = int(Lines[i+1])
+            xmn = [float(a) for a in Lines[i1:i1+di]]
+
+        elif l == '__ymn01\n':
+            i1 = i+2
+            di = int(Lines[i+1])
+            ymn = [float(a) for a in Lines[i1:i1+di]]
+    return zmn, ymn, xmn
 
 def create_xr_metadata(
     ds,
