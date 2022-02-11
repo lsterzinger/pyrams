@@ -1,4 +1,5 @@
 """Contains a collections of functions for working with RAMS data in Python"""
+from typing import List
 import numpy as np
 from netCDF4 import Dataset as ncfile
 from matplotlib import pyplot as plt
@@ -382,7 +383,7 @@ def create_xr_metadata(
         ds['z'] = np.arange(0, len(ds.z)) * dz
 
     if z is not None:
-        ds['z'] = x
+        ds['z'] = z
 
     return ds
 
