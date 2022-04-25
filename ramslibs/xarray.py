@@ -1,17 +1,23 @@
-@xr.register_dataset_accessor("RAMS")
+import xarray as xr
+@xr.register_dataset_accessor("rams")
 class RAMSAccessor:
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
         self._lwc = None
-        
+        self._iwc = None
+
     @property
     def lwc(self):
-        self._lwc = (self._obj.RCP + self._obj.RDP + self._obj.RRP)
-        return self._lwc
+        return (self._obj.RCP + self._obj.RDP + self._obj.RRP)
+    
+    @property
+    def iwc(self):
+        return (self._obj.RPP + self._obj.RSP + self._obj.RAP + self._obj.RGP + self._obj.RHP)
     
     @property
     def lwp(self):
-        if self._lwc is None:
-            self.lwc()
-        self._lwp = self._lwc.integrate('z')
-        return self._lwp
+        return self.lwc.integrate('z')
+
+    @property
+    def iwp(self):
+        return self.iwc.integrate('z')
