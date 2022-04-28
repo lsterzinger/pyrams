@@ -8,11 +8,11 @@ class RAMSAccessor:
 
     @property
     def lwc(self):
-        return (self._obj.RCP + self._obj.RDP + self._obj.RRP)
+        return (self._obj.RCP + self._obj.RDP + self._obj.RRP) * self._obj.DN0
     
     @property
     def iwc(self):
-        return (self._obj.RPP + self._obj.RSP + self._obj.RAP + self._obj.RGP + self._obj.RHP)
+        return (self._obj.RPP + self._obj.RSP + self._obj.RAP + self._obj.RGP + self._obj.RHP) * self._obj.DN0
     
     @property
     def lwp(self):
