@@ -22,6 +22,7 @@ setuptools.setup(name='pyrams',
       author_email='lsterzinger@ucdavis.edu',
       packages=setuptools.find_packages(),
       install_requires=[
+        'proj>=8.0.0',
         'metpy',
         'pandas',
         'numpy',
