@@ -79,13 +79,11 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 autodoc_mock_imports = [
-    'proj>=8.0.0',
     'metpy',
     'pandas',
     'numpy',
     'tqdm',
     'xarray',
-    'cartopy',
     'matplotlib',
     'shapely',
     'netCDF4',
