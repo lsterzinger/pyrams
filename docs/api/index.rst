@@ -4,11 +4,11 @@
 API Reference
 #############
 
-.. currentmodule:: ramslibs
+.. currentmodule:: pyrams
 
 .. autosummary::
     :toctree: generated/
     
-    ramslibs.data_tools
-    ramslibs.plotting_tools
-    ramslibs.thermo
+    pyrams.data_tools
+    pyrams.plotting_tools
+    pyrams.thermo

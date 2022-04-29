@@ -4,4 +4,4 @@ docs/_build
 build/
 dist/
 Atm-Functions/
-ramslibs.egg-info/
+pyrams.egg-info/

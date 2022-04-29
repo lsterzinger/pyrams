@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
 
 import re
-VERSIONFILE="../ramslibs/_version.py"
+VERSIONFILE="../pyrams/_version.py"
 verstrline = open(VERSIONFILE, "rt").read()
 VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
 mo = re.search(VSRE, verstrline, re.M)
@@ -27,7 +27,7 @@ else:
 
 # -- Project information -----------------------------------------------------
 
-project = 'RAMSlibs'
+project = 'PyRAMS'
 copyright = '2020, Lucas Sterzinger'
 author = 'Lucas Sterzinger'
 

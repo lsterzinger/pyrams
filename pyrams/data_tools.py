@@ -125,7 +125,7 @@ def domain_mean_netcdf(ds_with_metadata, outfile, vars=None):
     Arguments
     ---------
     ds_with_metadata : xr.Dataset
-        An xarray dataset created with `ramslibs.datatools.create_xr_dataset()`
+        An xarray dataset created with `pyrams.datatools.create_xr_dataset()`
 
     outfile : str
         Name of output file

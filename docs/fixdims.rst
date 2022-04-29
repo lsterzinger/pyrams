@@ -15,13 +15,13 @@ have the same size. For example below, the data has the dimensions ``['z', 'y', 
 However, since ``x=y=32``, RAMS assigns the dimension ``phony_dim_0`` to both x `and` y, causing errors notably in 
 `xr.open_mfdataset() <http://xarray.pydata.org/en/stable/generated/xarray.open_mfdataset.html>`_
 
-RAMSlibs has two ways of overcoming this problem. The first is to rebuild the ``xr.Dataset`` with the correct dimenions 
-using `fix_duplicate_dims <apiref.html#ramslibs.data_tools.fix_duplicate_dims>`/
+PyRAMS has two ways of overcoming this problem. The first is to rebuild the ``xr.Dataset`` with the correct dimenions 
+using `fix_duplicate_dims <apiref.html#pyrams.data_tools.fix_duplicate_dims>`/
 
 
 .. code-block:: python
 
-    from ramslibs.data_tools import fix_duplicate_dims
+    from pyrams.data_tools import fix_duplicate_dims
 
     ds = xr.open_dataset('./dataset.h5')
 
@@ -33,7 +33,7 @@ You can also rewrite a list of RAMS output files into netCDF with renamed dimens
 
 .. code-block:: python
 
-    from ramslibs.data_tools import rewrite_to_netcdf
+    from pyrams.data_tools import rewrite_to_netcdf
     from glob import glob
 
     flist = glob('/path/to/files/*.h5')

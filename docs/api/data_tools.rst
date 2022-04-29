@@ -2,5 +2,5 @@
 
 Data Tools
 =============
-.. automodule:: ramslibs.data_tools
+.. automodule:: pyrams.data_tools
     :members:

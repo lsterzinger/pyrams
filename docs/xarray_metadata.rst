@@ -1,13 +1,13 @@
 Xarray Metadata
 ===============
 
-RAMS outputs in hdf5 format, which does not have named dimensions. ``RAMSLibs.data_tools.create_xr_metadata()`` created named dimensions 
+RAMS outputs in hdf5 format, which does not have named dimensions. ``PyRAMS.data_tools.create_xr_metadata()`` created named dimensions 
 and populates them with the correct values. For example:
 
 .. code-block:: python
 
     import xarray as xr
-    from ramslibs.data_tools import create_xr_metadata
+    from pyrams.data_tools import create_xr_metadata
     from glob import glob
 
     # Get a list of files

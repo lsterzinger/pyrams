@@ -2,5 +2,5 @@
 
 Thermodynamic Functions
 =============
-.. automodule:: ramslibs.thermo
+.. automodule:: pyrams.thermo
     :members:
