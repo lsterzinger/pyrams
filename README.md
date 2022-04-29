@@ -5,7 +5,7 @@
 
 
 
-Documentation can be [found here](https://ramslibs.readthedocs.io/en/stable)
+Documentation can be [found here](https://pyrams.readthedocs.io/en/stable)
 
 Install with:
 ```
