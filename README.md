@@ -7,7 +7,12 @@
 
 Documentation can be [found here](https://pyrams.readthedocs.io/en/stable)
 
-Install with:
+Install from conda-forge:
+```
+conda install -c conda-forge pyrams
+```
+
+or with pip:
 ```
 pip install pyrams
 ``` 
