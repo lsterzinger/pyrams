@@ -1,0 +1,78 @@
+{
+    "GLAT": {
+        "unit": "degrees_north",
+        "long_name": "Latitude"
+    },
+    "GLON": {
+        "unit": "degrees_east",
+        "long_name": "Longitude"
+    },
+    "TOPT": {
+        "unit": "m",
+        "long_name": "Topography height"
+    },
+    "TOPZO": {
+        "unit": "m",
+        "long_name": "Topographic roughness length"
+    },
+    "PI": {
+        "unit": "J kg-1 K-1",
+        "long_name": "Exner function * Cp (where CP=1004 J kg-1 K-1)"
+    },
+    "PI0": {
+        "unit": "J kg-1 K-1",
+        "long_name": "Reference State PI"
+    },
+    "UP": {
+        "unit": "m\/s",
+        "long_name": "Past U wind component"
+    },
+    "VP": {
+        "unit": "m\/s",
+        "long_name": "Past V wind component"
+    },
+    "WP": {
+        "unit": "m\/s",
+        "long_name": "Past W wind component"
+    },
+    "PP": {
+        "unit": "J kg-1 K-1",
+        "long_name": "Past Exner Perturbation"
+    },
+    "UC": {
+        "unit": "m\/s",
+        "long_name": "U wind component"
+    },
+    "VC": {
+        "unit": "m\/s",
+        "long_name": "V wind component"
+    },
+    "WC": {
+        "unit": "m\/s",
+        "long_name": "W wind component"
+    },
+    "PC": {
+        "unit": "J kg-1 K-1",
+        "long_name": "Perturbation Exner"
+    },
+    "THP": {
+        "unit": "K",
+        "long_name": "Theta_IL ice-liquid potential temperature"
+    },
+    "RTP": {
+        "unit": "kg\/kg",
+        "long_name": "Total water mixing ratio (vapor + condensate)"
+    },
+    "THETA": {
+        "unit": "K",
+        "long_name": "Potential temperature"
+    },
+    "RV": {
+        "unit": "kg\/kg",
+        "long_name": "Water vapor mixing ratio"
+    },
+    "DN0": {
+        "unit": "kg m-3",
+        "long_name": "Reference state air density"
+    }
+}
