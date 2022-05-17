@@ -45,13 +45,15 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'sphinx_autosummary_accessors'
 ]
 
 master_doc = 'index'
 
+import sphinx_autosummary_accessors
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ['_templates', sphinx_autosummary_accessors.templates_path]
 
 intersphinx_mapping = {
     'python' : ('https://docs.python.org/3', None),
