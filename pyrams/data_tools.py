@@ -369,21 +369,33 @@ def create_xr_metadata(
     -------
     ds: ``xr.Dataset()``
     """
-    
-    ds = ds.rename(dims)
+    try:
+        ds = ds.rename(dims)
+    except ValueError:
+        print("Dimensions have already been renamed - skipping and continuing with other metadata")
 
-    if flist is not None:
-        ds['time'] = flist_to_times(flist)
+    if flist:
+        if type(flist) is str:
+            flist = [flist]
+        try:
+            ds['time'] = flist_to_times(flist)
+        except KeyError:
+            ds = ds.assign(time=flist_to_times(flist))
 
-    if dx is not None:
+    if dx:
         ds['x'] = np.arange(0, len(ds.x)) * dx
         ds['y'] = np.arange(0, len(ds.y)) * dx
-    
-    if dz is not None:
-        ds['z'] = np.arange(0, len(ds.z)) * dz
 
-    if z is not None:
+        ds['x'].attrs = {'unit' : 'm'}
+        ds['y'].attrs = {'unit' : 'm'}
+    
+    if dz:
+        ds['z'] = np.arange(0, len(ds.z)) * dz
+        ds['z'].attrs = {'unit' : 'm'}
+
+    if z:
         ds['z'] = z
+        ds['z'].attrs = {'unit' : 'm'}
 
     return ds
 
