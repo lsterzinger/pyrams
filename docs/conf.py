@@ -51,9 +51,9 @@ extensions = [
 
 master_doc = 'index'
 
-import sphinx_autosummary_accessors
+# import sphinx_autosummary_accessors
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates', sphinx_autosummary_accessors.templates_path]
+templates_path = ['_templates']
 
 intersphinx_mapping = {
     'python' : ('https://docs.python.org/3', None),
