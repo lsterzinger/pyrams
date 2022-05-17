@@ -10,5 +10,4 @@ API Reference
     :toctree: generated/
     
     pyrams.data_tools
-    pyrams.plotting_tools
     pyrams.thermo

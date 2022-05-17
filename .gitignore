@@ -6,4 +6,4 @@ dist/
 Atm-Functions/
 pyrams.egg-info/
 .DS_Store
-docs/api/
+generated/
