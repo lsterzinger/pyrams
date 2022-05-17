@@ -11,4 +11,3 @@ API Reference
     
     pyrams.data_tools
     pyrams.thermo
-    pyrams.xarray
