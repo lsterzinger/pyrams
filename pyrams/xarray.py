@@ -40,7 +40,7 @@ class RAMSAccessor:
 
         ds = self._obj
         import pyrams
-        with open( f'{pyrams.__path__[0]}/rams-vars.json', 'r') as inf:
+        with open( f'{pyrams.__path__[0]}/pyrams/rams-vars.json', 'r') as inf:
             ramsvars = json.loads(inf.read())
         
         nokey = []
