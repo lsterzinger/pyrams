@@ -37,11 +37,10 @@ class RAMSAccessor:
         Applies metadata (unit and long_name) to RAMS output variables. 
         """
         import json
+        import pkgutil
 
         ds = self._obj
-        import pyrams
-        with open( f'{pyrams.__path__[0]}/pyrams/rams-vars.json', 'r') as inf:
-            ramsvars = json.loads(inf.read())
+        ramsvars = json.loads(pkgutil.get_data(__name__, 'rams-vars.json'))
         
         nokey = []
         for v in ds.variables:
@@ -52,7 +51,7 @@ class RAMSAccessor:
                 nokey.append(v)
 
         if len(nokey) > 0:
-            raise Warning(f"No metadata found for variables {nokey}")
+            print(f"Warning: no metadata found for variables {nokey}")
 
 
     def fix_dims(
