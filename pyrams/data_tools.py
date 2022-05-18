@@ -386,16 +386,16 @@ def create_xr_metadata(
         ds['x'] = np.arange(0, len(ds.x)) * dx
         ds['y'] = np.arange(0, len(ds.y)) * dx
 
-        ds['x'].attrs = {'unit' : 'm'}
-        ds['y'].attrs = {'unit' : 'm'}
+        ds['x'].attrs = {'units' : 'm'}
+        ds['y'].attrs = {'units' : 'm'}
     
     if dz:
         ds['z'] = np.arange(0, len(ds.z)) * dz
-        ds['z'].attrs = {'unit' : 'm'}
+        ds['z'].attrs = {'units' : 'm'}
 
     if z:
         ds['z'] = z
-        ds['z'].attrs = {'unit' : 'm'}
+        ds['z'].attrs = {'units' : 'm'}
 
     return ds
 
