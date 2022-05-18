@@ -6,3 +6,5 @@ dependencies:
   - python=3.9
   - pyrams
   - xarray[complete]
+  - dask
+  - metpy
