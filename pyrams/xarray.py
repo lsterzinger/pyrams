@@ -45,7 +45,7 @@ class RAMSAccessor:
         nokey = []
         for v in ds.variables:
             if v in ramsvars.keys():
-                ds[v].attrs['unit'] = ramsvars[v]['unit']
+                ds[v].attrs['units'] = ramsvars[v]['unit']
                 ds[v].attrs['long_name'] = ramsvars[v]['long_name']
             else: 
                 nokey.append(v)
