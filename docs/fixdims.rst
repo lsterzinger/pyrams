@@ -1,7 +1,7 @@
 Fixing dimensions
 =================
 RAMS output, by default, uses dimensions named ``phony_dim_0``, ``phony_dim_1``, etc. The problem lies when two dimensions
-have the same size. For example below, the data has the dimensions ``['z', 'y', 'x'] = [300, 32, 32]    ``. 
+have the same size. For example below, the data has the dimensions ``['z', 'y', 'x'] = [300, 32, 32]``. 
 
 .. code-block:: 
 
