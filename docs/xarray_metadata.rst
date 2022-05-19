@@ -19,7 +19,9 @@ For example - variable metadata can be added with:
 
     ds.rams.apply_variable_metadata()
 
-The ``ds.rams.apply_variable_metadata()`` function adds units and long names to variable attributes in xarray
+The ``ds.rams.apply_variable_metadata()`` function adds units and long names to variable attributes in xarray. 
+The variable metadata was compiled from the `RAMS Variable List <https://vandenheever.atmos.colostate.edu/vdhpage/rams/docs/RAMS-VariableList.pdf>`_
+and was converted to a `JSON file included within the PyRAMS source code <https://github.com/lsterzinger/pyrams/blob/main/pyrams/rams-vars.json>`_.
 
 This can also be used to apply ``pyrams.data_tools.create_xr_metadata``:
 
