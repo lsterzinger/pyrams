@@ -33,7 +33,7 @@ Basic usage
 -----------
 The biggest feature of PyRAMS is its extension of `xarray <https://docs.xarray.dev/en/stable/>`_. 
 This functionality is outlined in :doc:`xarray_metadata` and an interactive example can be run 
-in-browser via the Binder link above.
+in-browser via the Binder link above. Other functions can be found in :doc:`api/index`
 
 .. toctree::
    :maxdepth: 2
