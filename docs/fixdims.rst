@@ -1,3 +1,4 @@
+.. _xarray
 Fixing dimensions
 =================
 RAMS output, by default, uses dimensions named ``phony_dim_0``, ``phony_dim_1``, etc. The problem lies when two dimensions

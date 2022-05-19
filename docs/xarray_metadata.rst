@@ -1,5 +1,5 @@
-Xarray Accessor
-===============
+Xarray Compatibility
+====================
 
 PyRAMS includes an xarray accessor to apply units and add other metadata to xarray datasets
 built on RAMS data.
