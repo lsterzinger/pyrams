@@ -1,5 +1,4 @@
 """Contains a collections of functions for working with RAMS data in Python"""
-from typing import List
 import numpy as np
 from netCDF4 import Dataset as ncfile
 from matplotlib import pyplot as plt
@@ -334,8 +333,10 @@ def create_xr_metadata(
     },
     dx = None,
     dz = None,
-    z = None
+    z = None,
+    dt = None,
 ):
+    import numpy as np
     """
     Adds metadata to ``xr.Dataset()``.
 
@@ -346,6 +347,10 @@ def create_xr_metadata(
     
     flist: List of file paths, optional
         List of filepaths, used to add datetimes to time dimension
+
+    dt: ``np.timedelta64``
+        Change the ``time`` coordinate to be a timedelta of unit ``dt``, 
+        ``flist`` must be specified.
 
     dims: dict, optional
         Dict of dims to rename. defaults to ::
@@ -377,10 +382,29 @@ def create_xr_metadata(
     if flist:
         if type(flist) is str:
             flist = [flist]
+        
         try:
             ds['time'] = flist_to_times(flist)
         except KeyError:
             ds = ds.assign(time=flist_to_times(flist))
+
+    if type(dt) is np.timedelta64:
+
+        # If we're getting timestamps from `flist`, convert to timedelta 
+        # and divide by dt to get in specified units
+        if flist:
+            t = (ds['time'] - ds['time'][0]) / dt
+            ds['time'] = t
+        
+        else:
+            raise TypeError('`flist` must be definied to use `dt`.')
+        # If not, assume dt describes length between time indices
+        # else:
+        #     ds['time'] = np.arange(0, dt*len(ds['time']), dt)
+    
+    # If not timedelta64 or None, raise error
+    elif dt is not None:
+        raise TypeError("`dt` must be np.timedelta64")
 
     if dx:
         ds['x'] = np.arange(0, len(ds.x)) * dx

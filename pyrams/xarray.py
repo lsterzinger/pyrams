@@ -93,7 +93,9 @@ class RAMSAccessor:
             'phony_dim_0' : 'x',
             'phony_dim_1' : 'y',
             'phony_dim_2' : 'z'
-        }):
+        },
+        dt = None,
+        ):
         """
         Calls pyrams.data_tools.create_xr_metadata()
 
@@ -101,6 +103,10 @@ class RAMSAccessor:
         ----------  
         flist: List of file paths, optional
             List of filepaths, used to add datetimes to time dimension
+
+        dt: ``np.timedelta64``
+            Change the ``time`` coordinate to be a timedelta of unit ``dt``, 
+            ``flist`` must be specified.
 
         dims: dict, optional
             Dict of dims to rename. defaults to ::
@@ -129,4 +135,6 @@ class RAMSAccessor:
         from pyrams.data_tools import flist_to_times, create_xr_metadata
         import numpy as np
 
-        return create_xr_metadata(self._obj, flist, dims, dx, dz, z)
+        return create_xr_metadata(
+            self._obj, flist = flist, dims = dims, dx = dx,
+            dz = dz, z = z, dt = dt)
