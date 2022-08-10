@@ -1,5 +1,6 @@
 from logging import warning
 from tokenize import String
+from warnings import WarningMessage
 import xarray as xr
 @xr.register_dataset_accessor("rams")
 class RAMSAccessor:
@@ -13,14 +14,42 @@ class RAMSAccessor:
         """
         Calculate liquid water content
         """
-        return (self._obj.RCP + self._obj.RDP + self._obj.RRP) * self._obj.DN0
+
+        vars = [
+            'RCP',
+            'RRP',
+            'RDP'
+        ]
+
+        vsum = 0
+        for v in vars:
+            try:
+                vsum = vsum + self._obj[v]
+            except KeyError:
+                print(f"Warning, {v} not found in dataset - skipping in LWC calculation")
+
+        return (vsum) * self._obj.DN0
     
     @property
     def iwc(self):
         """
-        Calculate Ice Water Content
+        Calculate Ice Water Content (kg/m3)
         """
-        return (self._obj.RPP + self._obj.RSP + self._obj.RAP + self._obj.RGP + self._obj.RHP) * self._obj.DN0
+        vars = [
+            'RPP',
+            'RSP',
+            'RAP',
+            'RGP',
+            'RHP'
+        ]
+        vsum = 0
+        for v in vars:
+            try:
+                vsum = vsum + self._obj[v]
+            except KeyError:
+                print(f"Warning, {v} not found in dataset - skipping in IWC calculation")
+
+        return (vsum) * self._obj.DN0
     
     @property
     def lwp(self):
