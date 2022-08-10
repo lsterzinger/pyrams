@@ -1,6 +1,4 @@
 """Contains a collections of functions for working with RAMS data in Python"""
-from ctypes import FormatError
-from typing import List
 import numpy as np
 from netCDF4 import Dataset as ncfile
 from matplotlib import pyplot as plt
@@ -328,7 +326,6 @@ def flist_to_times(flist):
 def create_xr_metadata(
     ds,
     flist = None,
-    dt = None,
     dims = {
         'phony_dim_0' : 'x',
         'phony_dim_1' : 'y',
@@ -337,6 +334,7 @@ def create_xr_metadata(
     dx = None,
     dz = None,
     z = None,
+    dt = None,
 ):
     import numpy as np
     """
@@ -400,9 +398,11 @@ def create_xr_metadata(
             t = (ds['time'] - ds['time'][0]) / dt
             ds['time'] = t
         
-        # If not, assume dt describes length between time indices
         else:
-            ds['time'] = np.arange(0, len(ds['time'], dt))
+            raise TypeError('`flist` must be definied to use `dt`.')
+        # If not, assume dt describes length between time indices
+        # else:
+        #     ds['time'] = np.arange(0, dt*len(ds['time']), dt)
     
     # If not timedelta64 or None, raise error
     elif dt is not None:

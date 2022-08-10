@@ -57,7 +57,6 @@ class RAMSAccessor:
     def fix_dims(
         self,
         flist=None, 
-        dt = None,
         dx=None,
         dz=None,
         z=None,
@@ -65,7 +64,9 @@ class RAMSAccessor:
             'phony_dim_0' : 'x',
             'phony_dim_1' : 'y',
             'phony_dim_2' : 'z'
-        }):
+        },
+        dt = None,
+        ):
         """
         Calls pyrams.data_tools.create_xr_metadata()
 
@@ -107,4 +108,6 @@ class RAMSAccessor:
         from pyrams.data_tools import flist_to_times, create_xr_metadata
         import numpy as np
 
-        return create_xr_metadata(self._obj, flist, dims, dx, dz, z)
+        return create_xr_metadata(
+            self._obj, flist = flist, dims = dims, dx = dx,
+            dz = dz, z = z, dt = dt)
