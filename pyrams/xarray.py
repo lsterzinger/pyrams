@@ -57,6 +57,7 @@ class RAMSAccessor:
     def fix_dims(
         self,
         flist=None, 
+        dt = None,
         dx=None,
         dz=None,
         z=None,
@@ -72,6 +73,12 @@ class RAMSAccessor:
         ----------  
         flist: List of file paths, optional
             List of filepaths, used to add datetimes to time dimension
+
+        dt: ``np.timedelta64``
+            If ``flist`` is specified, change the ``time`` coordinate to be a timedelta of unit ``dt``.
+
+            If ``flist`` is not specified, build ``time`` coordinate assuming a spacing of ``dt`` 
+            between time indices (file outputs).
 
         dims: dict, optional
             Dict of dims to rename. defaults to ::
