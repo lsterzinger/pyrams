@@ -1,6 +1,7 @@
 # PyRAMS - Useful tools for working with RAMS data
 
 [![Documentation Status](https://readthedocs.org/projects/pyrams/badge/?version=latest)](https://pyrams.readthedocs.io/en/latest/?badge=latest)[![DOI](https://zenodo.org/badge/176599749.svg)](https://zenodo.org/badge/latestdoi/176599749)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/pyrams/badges/version.svg)](https://anaconda.org/conda-forge/pyrams)
 
 ## Basic Usage
 The biggest feature of PyRAMS is its extension of [xarray](https://docs.xarray.dev/en/stable/). 
