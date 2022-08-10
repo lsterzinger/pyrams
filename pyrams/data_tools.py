@@ -349,10 +349,8 @@ def create_xr_metadata(
         List of filepaths, used to add datetimes to time dimension
 
     dt: ``np.timedelta64``
-        If ``flist`` is specified, change the ``time`` coordinate to be a timedelta of unit ``dt``.
-
-        If ``flist`` is not specified, build ``time`` coordinate assuming a spacing of ``dt`` 
-        between time indices (file outputs).
+        Change the ``time`` coordinate to be a timedelta of unit ``dt``, 
+        ``flist`` must be specified.
 
     dims: dict, optional
         Dict of dims to rename. defaults to ::
