@@ -327,6 +327,7 @@ def flist_to_times(flist):
 def create_xr_metadata(
     ds,
     flist = None,
+    dt = None,
     dims = {
         'phony_dim_0' : 'x',
         'phony_dim_1' : 'y',
@@ -334,8 +335,9 @@ def create_xr_metadata(
     },
     dx = None,
     dz = None,
-    z = None
+    z = None,
 ):
+    import numpy as np
     """
     Adds metadata to ``xr.Dataset()``.
 
@@ -346,6 +348,12 @@ def create_xr_metadata(
     
     flist: List of file paths, optional
         List of filepaths, used to add datetimes to time dimension
+
+    dt: ``np.timedelta64``
+        If ``flist`` is specified, change the ``time`` coordinate to be a timedelta of unit ``dt``.
+
+        If ``flist`` is not specified, build ``time`` coordinate assuming a spacing of ``dt`` 
+        between time indices (file outputs).
 
     dims: dict, optional
         Dict of dims to rename. defaults to ::
@@ -377,11 +385,23 @@ def create_xr_metadata(
     if flist:
         if type(flist) is str:
             flist = [flist]
+        
         try:
             ds['time'] = flist_to_times(flist)
         except KeyError:
             ds = ds.assign(time=flist_to_times(flist))
 
+    if dt:
+
+        # If we're getting timestamps from `flist`, convert to timedelta 
+        # and divide by dt to get in specified units
+        if flist:
+            t = (ds['time'] - ds['time'][0]) / dt
+            ds['time'] = t
+        
+        # If not, assume dt describes length between time indices
+        else:
+            ds['time'] = np.arange(0, len(ds['time'], dt))
     if dx:
         ds['x'] = np.arange(0, len(ds.x)) * dx
         ds['y'] = np.arange(0, len(ds.y)) * dx
