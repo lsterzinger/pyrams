@@ -391,7 +391,7 @@ def create_xr_metadata(
         except KeyError:
             ds = ds.assign(time=flist_to_times(flist))
 
-    if dt:
+    if dt is not None:
 
         # If we're getting timestamps from `flist`, convert to timedelta 
         # and divide by dt to get in specified units
