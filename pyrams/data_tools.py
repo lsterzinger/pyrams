@@ -1,4 +1,5 @@
 """Contains a collections of functions for working with RAMS data in Python"""
+from ctypes import FormatError
 from typing import List
 import numpy as np
 from netCDF4 import Dataset as ncfile
@@ -391,7 +392,7 @@ def create_xr_metadata(
         except KeyError:
             ds = ds.assign(time=flist_to_times(flist))
 
-    if dt is not None:
+    if type(dt) is np.timedelta64:
 
         # If we're getting timestamps from `flist`, convert to timedelta 
         # and divide by dt to get in specified units
@@ -402,6 +403,11 @@ def create_xr_metadata(
         # If not, assume dt describes length between time indices
         else:
             ds['time'] = np.arange(0, len(ds['time'], dt))
+    
+    # If not timedelta64 or None, raise error
+    elif dt is not None:
+        raise TypeError("`dt` must be np.timedelta64")
+
     if dx:
         ds['x'] = np.arange(0, len(ds.x)) * dx
         ds['y'] = np.arange(0, len(ds.y)) * dx
