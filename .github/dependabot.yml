@@ -3,8 +3,4 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "weekly"
-  - package-ecosystem: "conda"
-    directory: "/"
-    schedule:
-      interval: "weekly"
+      interval: "daily"
