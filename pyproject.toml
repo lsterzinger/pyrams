@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta" 
+
+[project]
+name = "pyrams"
+version = "0.8.5"
+dependencies = [
+    'metpy',
+    'pandas',
+    'numpy',
+    'tqdm',
+    'xarray',
+    'matplotlib',
+    'shapely',
+    'netCDF4',
+]
+
+[options]
+include_package_data = True
