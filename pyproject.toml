@@ -15,6 +15,3 @@ dependencies = [
     'shapely',
     'netCDF4',
 ]
-
-[options]
-include_package_data = True
