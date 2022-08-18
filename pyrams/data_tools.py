@@ -348,7 +348,8 @@ def create_xr_metadata(
     flist: List of file paths, optional
         List of filepaths, used to add datetimes to time dimension
 
-    dt: ``np.timedelta64``
+    dt: ``String``
+        One of ``['second', 'minute', 'hour', 'day']``
         Change the ``time`` coordinate to be a timedelta of unit ``dt``, 
         ``flist`` must be specified.
 
@@ -374,6 +375,8 @@ def create_xr_metadata(
     -------
     ds: ``xr.Dataset()``
     """
+
+    
     try:
         ds = ds.rename(dims)
     except ValueError:
@@ -388,12 +391,18 @@ def create_xr_metadata(
         except KeyError:
             ds = ds.assign(time=flist_to_times(flist))
 
-    if type(dt) is np.timedelta64:
+    dt_options = {
+        'second' : np.timedelta64(1, 's'),
+        'minute' : np.timedelta64(1, 'm'),
+        'hour' : np.timedelta64(1, 'h'),
+        'day' : np.timedelta64(1, 'D'),
+    }
+    if dt in dt_options:
 
         # If we're getting timestamps from `flist`, convert to timedelta 
         # and divide by dt to get in specified units
         if flist:
-            t = (ds['time'] - ds['time'][0]) / dt
+            t = (ds['time'] - ds['time'][0]) / dt_options[dt]
             ds['time'] = t
         
         else:
@@ -402,9 +411,13 @@ def create_xr_metadata(
         # else:
         #     ds['time'] = np.arange(0, dt*len(ds['time']), dt)
     
-    # If not timedelta64 or None, raise error
+
+        # Add unit
+        ds['time'].attrs['unit'] = dt
+
+    # If not in dt_options or None, raise error
     elif dt is not None:
-        raise TypeError("`dt` must be np.timedelta64")
+        raise TypeError(f"`dt` must one of {list(dt_options.keys())}")
 
     if dx:
         ds['x'] = np.arange(0, len(ds.x)) * dx
