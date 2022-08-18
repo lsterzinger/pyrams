@@ -348,7 +348,8 @@ def create_xr_metadata(
     flist: List of file paths, optional
         List of filepaths, used to add datetimes to time dimension
 
-    dt: ``np.timedelta64``
+    dt: ``String``
+        One of ``['second', 'minute', 'hour', 'day']``
         Change the ``time`` coordinate to be a timedelta of unit ``dt``, 
         ``flist`` must be specified.
 
