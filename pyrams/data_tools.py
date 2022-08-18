@@ -1,4 +1,5 @@
 """Contains a collections of functions for working with RAMS data in Python"""
+from operator import concat
 import numpy as np
 from netCDF4 import Dataset as ncfile
 from matplotlib import pyplot as plt
@@ -601,3 +602,20 @@ def z_levels_2d(ztn, topt):
     return zheight
 
 
+def build_mfdataset(path, **kwargs):
+    """
+    Build and xarray dataset with a time dimension
+
+    Parameters
+    ----------
+    path : string
+        Path to folder containing files
+
+    **kwargs
+        Additional arguments to pass to xarray
+    """
+    from glob import glob
+    flist = sorted(glob(path + '/*.h5'))
+    print(f'Building dataset with {len(flist)} files')
+
+    return xr.open_mfdataset(flist, combine='nested', concat_dim='time', **kwargs)
