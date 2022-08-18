@@ -437,82 +437,6 @@ def create_xr_metadata(
     return ds
 
 
-
-def vert_int(data, density, zheights, no_time=False):
-    """
-    Calculates the vertical integration given 3-D data, air density,
-    and grid height
-
-    Parameters
-    -----------
-    data: numpy.ndarray
-        The data array. Can be in form (z, y, x), (z, x),
-        (t, z, y, x), and (t, z, x)
-
-    density: numpy.ndarray
-        The air density, in (z, y, x) or (z, x)
-
-    zheights: numpy.ndarray
-        The height of the gridboxes, in (z, y, x) or (z, x)
-
-    no_time: bool, optional
-        Flag for indicating lack of time dimension. Default=False
-
-    Returns
-    -------
-    data_int: numpy.ndarray
-        The vertically integrated array. Same dimensions as `data` except
-        without the 'z' dimension
-    """
-
-    # if 3-D, assume z,y,x integrate to y,x
-    # If there's no time coordinate:
-    if no_time:
-        if len(data.shape) == 3:  # (z, y, x)
-            zax, yax, xax = 0, 1, 2
-            zlen, ylen, xlen = list(data.shape)
-            data_int = np.zeros((ylen, xlen))
-
-        elif len(data.shape) == 2:  # (z, x)
-            zax, xax = 0, 1
-            zlen, xlen = list(data.shape)
-            data_int = np.zeros((xlen))
-
-        else:
-            raise ValueError("Error with dimensions...\
-                are you sure there's no time dimension?")
-
-        # Do vertical integration
-        data = data * density  # Multiply by density to get kg/m^3
-        for z in range(zlen-1):
-            data_int += data[z, :] * (zheights[z+1, :] - zheights[z, :])
-
-    # If there is a time coordinate
-    else:
-        if len(data.shape) == 4:  # (t, z, y, x)
-            tax, zax, yax, xax = 0, 1, 2, 3
-            tlen, zlen, ylen, xlen = list(data.shape)
-            data_int = np.zeros((tlen, ylen, xlen))
-
-        elif len(data.shape) == 3:  # (t, z, x)
-            tax, zax, xax = 0, 1, 2
-            tlen, zlen, xlen = list(data.shape)
-            data_int = np.zeros((tlen, xlen))
-
-        else:
-            raise ValueError("Error with dimensions,\
-                are you sure you mean to have a time dimension?")
-
-        # Do vertical integration
-        for t in range(tlen):
-            data[t, :] = data[t, :] * density  # Multiply by density to kg/m^3
-            for z in range(zlen-1):
-                data_int[t, :] += data[t, z, :] *\
-                    (zheights[z+1, :] - zheights[z, :])
-
-    return data_int
-
-
 def habit_count(habits, tmax):
     """
     Takes 3D habit data and tmax (number of time steps) and returns the number
@@ -677,23 +601,3 @@ def z_levels_2d(ztn, topt):
     return zheight
 
 
-def pressure(pi):
-    """
-    Calculate the pressure from Exner function using PI.
-
-    Parameters
-    ----------
-    pi : numpy.ndarray
-        PI (modified exner function) from RAMS model output
-
-    Returns
-    -------
-    pressure : numpy.ndarray
-        Pressure (millibars)
-    """
-
-    p0 = 1000.
-    cp = 1004.
-    R = 287.
-
-    return p0*np.power((pi/cp), (cp/R))
