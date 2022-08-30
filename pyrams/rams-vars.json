@@ -76,11 +76,11 @@
         "long_name": "reference state air density"
     },
     "SOIL_TEXT": {
-        "unit":NaN,
+        "unit":"",
         "long_name": "dominant soil textural class"
     },
     "LEAF_CLASS": {
-        "unit":NaN,
+        "unit":"",
         "long_name": "vegetation class"
     },
     "PATCH_AREA": {
@@ -88,15 +88,15 @@
         "long_name": "patch fractional area"
     },
     "VEG_NDVIP": {
-        "unit":NaN,
+        "unit":"",
         "long_name": "past NDVI (NDVI = Normalized Difference Vegetation Index)"
     },
     "VEG_NDVIC": {
-        "unit":NaN,
+        "unit":"",
         "long_name": "current NDVI"
     },
     "VEG_NDVIF": {
-        "unit":NaN,
+        "unit":"",
         "long_name": "future NDVI"
     },
     "PATCH_ROUGH": {
@@ -140,7 +140,7 @@
         "long_name": "soil energy (used to compute soil temperature)"
     },
     "SFCWATER_NLEV": {
-        "unit":NaN,
+        "unit":"",
         "long_name": "number of snow (or surface water) levels"
     },
     "SFCWATER_MASS": {
@@ -240,15 +240,15 @@
         "long_name": "ground respiration flux"
     },
     "RSTFAC1": {
-        "unit":NaN,
+        "unit":"",
         "long_name": "leaf-surface humidity resistance stress"
     },
     "RSTFAC2": {
-        "unit":NaN,
+        "unit":"",
         "long_name": "soil moisture resistance stress"
     },
     "RSTFAC3": {
-        "unit":NaN,
+        "unit":"",
         "long_name": "temperature resistance stress"
     },
     "ECT": {
@@ -964,15 +964,15 @@
         "long_name": "vertical eddy diffusivity\ncoefficient for heat for scalar quantities"
     },
     "SFLUX_U": {
-        "unit": "Pascals",
+        "unit": "pascal",
         "long_name": "surface U-momentum flux"
     },
     "SFLUX_V": {
-        "unit": "Pascals",
+        "unit": "pascal",
         "long_name": "surface V-momentum flux"
     },
     "SFLUX_W": {
-        "unit": "Pascals",
+        "unit": "pascal",
         "long_name": "surface W-momentum flux"
     },
     "SFLUX_T": {
@@ -1044,19 +1044,19 @@
         "long_name": "instantaneous vertical velocity contribution by the\ncombination of both advection and diffusion"
     },
     "LATHEATVAPT": {
-        "unit": "d\u0398 or dT",
+        "unit": "kelvin",
         "long_name": "change in (T or \u0398) due to vapor\ndiffusion and cloud & ice nucleation"
     },
     "LATHEATFRZT": {
-        "unit": "d\u0398 or dT",
+        "unit": "kelvin",
         "long_name": "change in (T or \u0398) due to\ncollision-coalescence and melting routines"
     },
     "LATHEATVAP": {
-        "unit": "d\u0398 or dT",
+        "unit": "kelvin",
         "long_name": "Instantaneous \/ single timestep (T or \u0398) due to vapor diffusion and cloud & ice\nnucleation"
     },
     "LATHEATFRZ": {
-        "unit": "d\u0398 or dT",
+        "unit": "kelvin",
         "long_name": "Instantaneous \/ single timestep (T or \u0398) due to\ncollision-coalescence and melting routines"
     },
     "NUCCLDRT": {

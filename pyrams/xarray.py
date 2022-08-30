@@ -61,9 +61,14 @@ class RAMSAccessor:
         """Calculate Ice Water Path"""
         return self.iwc.integrate('z')
 
-    def apply_variable_metadata(self):
+    def apply_variable_metadata(self, pint=True):
         """
         Applies metadata (unit and long_name) to RAMS output variables. 
+
+        Parameters
+        ----------
+        pint: bool
+            If true (default) will return with pint quantities added to variables via pint-xarray
         """
         import json
         import pkgutil
@@ -82,6 +87,10 @@ class RAMSAccessor:
         if len(nokey) > 0:
             print(f"Warning: no metadata found for variables {nokey}")
 
+        if pint:
+            import cf_xarray.units
+            import pint_xarray
+            return ds.pint.quantify()
 
     def fix_dims(
         self,
