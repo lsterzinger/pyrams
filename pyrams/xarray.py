@@ -29,7 +29,7 @@ class RAMSAccessor:
                 print(f"Warning, {v} not found in dataset - skipping in LWC calculation")
 
         lwcout = (vsum) * self._obj.DN0
-        lwcout.arrts['long_name'] = 'liquid water content'
+        lwcout.arrts['long_name'] = 'Liquid Water Content'
         return lwcout
     
     @property
@@ -52,21 +52,21 @@ class RAMSAccessor:
                 print(f"Warning, {v} not found in dataset - skipping in IWC calculation")
 
         iwcout = (vsum) * self._obj.DN0
-        iwcout.arrts['long_name'] = 'ice water content'
+        iwcout.arrts['long_name'] = 'Ice Water Content'
         return iwcout
     
     @property
     def lwp(self):
         """Calculate Liquid Water Path"""
         lwpout = self.lwc.integrate('z')
-        lwpout.attrs['long_name'] = 'liquid water path'
+        lwpout.attrs['long_name'] = 'Liquid Water Path'
         return lwpout
 
     @property
     def iwp(self):
         """Calculate Ice Water Path"""
         iwpout = self.iwc.integrate('z')
-        iwpout.attrs['long_name'] = 'ice water path'
+        iwpout.attrs['long_name'] = 'Ice Water Path'
         return iwpout
 
     def apply_variable_metadata(self, pint=True):
