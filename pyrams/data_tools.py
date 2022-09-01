@@ -414,7 +414,7 @@ def create_xr_metadata(
     
 
         # Add unit
-        ds['time'].attrs['unit'] = dt
+        ds['time'].attrs['units'] = dt
 
     # If not in dt_options or None, raise error
     elif dt is not None:
