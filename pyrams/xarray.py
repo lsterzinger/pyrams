@@ -69,6 +69,30 @@ class RAMSAccessor:
         iwpout.attrs['long_name'] = 'Ice Water Path'
         return iwpout
 
+    @property
+    def cloudradius(self):
+        """Calculate cloud droplet mean size"""
+        from .thermo import rho_w
+        import numpy as np
+        
+        ds = self._obj
+        rcp = ds.RCP
+        ccp = ds.CCP
+        
+        #TODO This could use some cleanup
+        try:
+            ds.pint
+        except AttributeError:
+            print("No Pint units detected, output will be in meters")
+        else:
+            if rcp.pint.units != None and ccp.pint.units != None:
+                import pint
+                rho_w = rho_w * pint.Unit('kg/m3')
+
+        r = ((3/4) * ((rcp/ccp)/(np.pi * rho_w)))**(1/3)
+        r.attrs['long_name'] = 'Mean Cloud Droplet Radius'
+        return r
+
     def apply_variable_metadata(self, pint=True):
         """
         Applies metadata (unit and long_name) to RAMS output variables. 
