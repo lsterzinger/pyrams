@@ -79,18 +79,16 @@ class RAMSAccessor:
         rcp = ds.RCP
         ccp = ds.CCP
         
-        #TODO This could use some cleanup
-        try:
-            ds.pint
-        except AttributeError:
-            print("No Pint units detected, output will be in meters")
-        else:
-            if rcp.pint.units != None and ccp.pint.units != None:
-                import pint
-                rho_w = rho_w * pint.Unit('kg/m3')
-
         r = ((3/4) * ((rcp/ccp)/(np.pi * rho_w)))**(1/3)
         r.attrs['long_name'] = 'Mean Cloud Droplet Radius'
+        r.attrs['units'] = 'm'
+        try:
+            import pint
+            r = r.pint.dequantify()
+            r = r.pint.quantify('m')
+        except AttributeError:
+            print("No Pint units detected, output will be in meters")
+            r.attrs['units'] = 'm'
         return r
 
     def apply_variable_metadata(self, pint=True):
