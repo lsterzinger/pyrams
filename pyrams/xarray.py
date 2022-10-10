@@ -29,7 +29,7 @@ class RAMSAccessor:
                 print(f"Warning, {v} not found in dataset - skipping in LWC calculation")
 
         lwcout = (vsum) * self._obj.DN0
-        lwcout.arrts['long_name'] = 'Liquid Water Content'
+        lwcout.attrs['long_name'] = 'Liquid Water Content'
         return lwcout
     
     @property
@@ -52,7 +52,7 @@ class RAMSAccessor:
                 print(f"Warning, {v} not found in dataset - skipping in IWC calculation")
 
         iwcout = (vsum) * self._obj.DN0
-        iwcout.arrts['long_name'] = 'Ice Water Content'
+        iwcout.attrs['long_name'] = 'Ice Water Content'
         return iwcout
     
     @property
