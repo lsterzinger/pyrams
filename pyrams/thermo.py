@@ -2,7 +2,7 @@
 cp = 1004
 R = 287
 p0 = 1000
-
+rho_w = 997
 
 def temperature(theta, pi, celsius=False):
     """
