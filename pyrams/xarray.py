@@ -60,14 +60,32 @@ class RAMSAccessor:
         """Calculate Liquid Water Path"""
         lwpout = self.lwc.integrate('z')
         lwpout.attrs['long_name'] = 'Liquid Water Path'
-        return lwpout
+        
+        # pint-xarray does not consider units of coodinates, so if we're tracking units 
+        # then multiply by meters to adjust for integration
+        try:
+            import pint
+            if lwpout.pint.units == pint.Unit('kg/m^3'): lwpout = lwpout * pint.Unit('m')
+            return lwpout
+        except AttributeError:
+            print('No pint ')
+            return lwpout
+
 
     @property
     def iwp(self):
         """Calculate Ice Water Path"""
         iwpout = self.iwc.integrate('z')
         iwpout.attrs['long_name'] = 'Ice Water Path'
-        return iwpout
+
+        # pint-xarray does not consider units of coodinates, so if we're tracking units 
+        # then multiply by meters to adjust for integration
+        try:
+            import pint
+            if iwpout.pint.units == pint.Unit('kg/m^3'): iwpout = iwpout * pint.Unit('m')
+            return iwpout
+        except AttributeError:
+            return iwpout
 
     @property
     def cloudradius(self):
