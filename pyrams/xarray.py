@@ -61,7 +61,7 @@ class RAMSAccessor:
         lwpout = self.lwc.integrate('z')
         lwpout.attrs['long_name'] = 'Liquid Water Path'
         
-        # pint-xarray does not consider units of coodinates, so if we're tracking units 
+        # pint-xarray does not consider units of coordinates, so if we're tracking units 
         # then multiply by meters to adjust for integration
         try:
             import pint
@@ -78,7 +78,7 @@ class RAMSAccessor:
         iwpout = self.iwc.integrate('z')
         iwpout.attrs['long_name'] = 'Ice Water Path'
 
-        # pint-xarray does not consider units of coodinates, so if we're tracking units 
+        # pint-xarray does not consider units of coordinates, so if we're tracking units 
         # then multiply by meters to adjust for integration
         try:
             import pint
