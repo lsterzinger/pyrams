@@ -68,7 +68,6 @@ class RAMSAccessor:
             if lwpout.pint.units == pint.Unit('kg/m^3'): lwpout = lwpout * pint.Unit('m')
             return lwpout
         except AttributeError:
-            print('No pint ')
             return lwpout
 
 
