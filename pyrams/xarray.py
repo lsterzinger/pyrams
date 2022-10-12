@@ -2,6 +2,7 @@ from logging import warning
 from tokenize import String
 from warnings import WarningMessage
 import xarray as xr
+import logging
 @xr.register_dataset_accessor("rams")
 class RAMSAccessor:
     def __init__(self, xarray_obj):
@@ -58,6 +59,7 @@ class RAMSAccessor:
     @property
     def lwp(self):
         """Calculate Liquid Water Path"""
+        logging.debug('LWP calculation')
         lwpout = self.lwc.integrate('z')
         lwpout.attrs['long_name'] = 'Liquid Water Path'
         
@@ -65,25 +67,38 @@ class RAMSAccessor:
         # then multiply by meters to adjust for integration
         try:
             import pint
-            if lwpout.pint.units == pint.Unit('kg/m^3'): lwpout = lwpout * pint.Unit('m')
+            logging.debug(f'LWP units: {lwpout.pint.units}')
+            if lwpout.pint.units == pint.Unit('kg/m^3'): 
+                logging.debug('Units in LWP detected, manually adjusting')
+                lwpout = lwpout.pint.dequantify()
+                lwpout = lwpout.pint.quantify('kilogram / meter ** 2')
             return lwpout
-        except AttributeError:
+        except AttributeError as a:
+            print(a)
+            logging.debug("No LWP units detected")
             return lwpout
 
 
     @property
     def iwp(self):
         """Calculate Ice Water Path"""
+        logging.debug('IWP calculation')
         iwpout = self.iwc.integrate('z')
         iwpout.attrs['long_name'] = 'Ice Water Path'
-
+        
         # pint-xarray does not consider units of coordinates, so if we're tracking units 
         # then multiply by meters to adjust for integration
         try:
             import pint
-            if iwpout.pint.units == pint.Unit('kg/m^3'): iwpout = iwpout * pint.Unit('m')
+            logging.debug(f'IWP units: {iwpout.pint.units}')
+            if iwpout.pint.units == pint.Unit('kg/m^3'): 
+                logging.debug('Units in IWP detected, manually adjusting')
+                iwpout = iwpout.pint.dequantify()
+                iwpout = iwpout.pint.quantify('kilogram / meter ** 2')
             return iwpout
-        except AttributeError:
+        except AttributeError as a:
+            print(a)
+            logging.debug("No IWP units detected")
             return iwpout
 
     @property
