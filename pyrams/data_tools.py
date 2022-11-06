@@ -1,8 +1,5 @@
 """Contains a collections of functions for working with RAMS data in Python"""
-from operator import concat
 import numpy as np
-from netCDF4 import Dataset as ncfile
-from matplotlib import pyplot as plt
 import xarray as xr
 import warnings
 from tqdm import tqdm
@@ -10,6 +7,7 @@ import pandas as pd
 from datetime import datetime
 from metpy.interpolate import log_interpolate_1d
 import re
+
 
 class DataInfo():
     """
@@ -129,7 +127,7 @@ def domain_mean_netcdf(ds_with_metadata, outfile, vars=None):
 
     outfile : str
         Name of output file
-    
+
     vars : list (optional)
         List of variable names to write. Default is to process and write all variables
     """
@@ -144,7 +142,7 @@ def domain_mean_netcdf(ds_with_metadata, outfile, vars=None):
 
     if exists(outfile):
         raise Exception(f"Error: {outfile} already exists")
-                        
+
     for v in tqdm(vars):
         try:
 
@@ -156,12 +154,13 @@ def domain_mean_netcdf(ds_with_metadata, outfile, vars=None):
             a.to_netcdf(outfile, mode=mode)
             # print(a)
         except ValueError:
-            print(f"Variable {f} ")
+            print(f"Variable {v} ")
             continue
+
 
 def rewrite_to_netcdf(flist, output_path, duped_dims, phony_dim, prefix='dimfix', single_file=False, compression_level=None):
     """
-    Rewrites RAMS standard output files as netCDF4 with fixed dimension data, using 
+    Rewrites RAMS standard output files as netCDF4 with fixed dimension data, using
     ``data_tools.fix_duplicate_dims()``
 
     Arguments
@@ -255,7 +254,7 @@ def fix_duplicate_dims(ds, duped_dims, phony_dim):
     try:
         dupe_dim = dims[phony_dim]
     except KeyError:
-        print(f'Error, duplicate dimension must be \'phony_dim_0\'')
+        print('Error, duplicate dimension must be \'phony_dim_0\'')
         return
 
     dims.pop(phony_dim)
@@ -283,7 +282,7 @@ def fix_duplicate_dims(ds, duped_dims, phony_dim):
             ds_new[v] = (vardims, ds[v])
 
     ds.close()
-    return(ds_new)
+    return (ds_new)
 
 
 def flist_to_times(flist):
@@ -307,11 +306,12 @@ def flist_to_times(flist):
     dtregex = r"[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{6}"
 
     times = np.zeros(len(flist), dtype=datetime)
-    for i,f in enumerate(flist):
+    for i, f in enumerate(flist):
 
         tarr = re.findall(dtregex, f)
         if tarr == []:
-            raise SyntaxError(f"No datetimes of form \"YYYY-MM-DD-HHMMSS\" were found in {f}")
+            raise SyntaxError(
+                f"No datetimes of form \"YYYY-MM-DD-HHMMSS\" were found in {f}")
 
         if len(tarr) == 1:
             traw = tarr[0]
@@ -326,16 +326,16 @@ def flist_to_times(flist):
 
 def create_xr_metadata(
     ds,
-    flist = None,
-    dims = {
-        'phony_dim_0' : 'x',
-        'phony_dim_1' : 'y',
-        'phony_dim_2' : 'z'
+    flist=None,
+    dims={
+        'phony_dim_0': 'x',
+        'phony_dim_1': 'y',
+        'phony_dim_2': 'z'
     },
-    dx = None,
-    dz = None,
-    z = None,
-    dt = None,
+    dx=None,
+    dz=None,
+    z=None,
+    dt=None,
 ):
     import numpy as np
     """
@@ -377,7 +377,6 @@ def create_xr_metadata(
     ds: ``xr.Dataset()``
     """
 
-    
     try:
         ds = ds.rename(dims)
     except ValueError:
@@ -386,32 +385,31 @@ def create_xr_metadata(
     if flist:
         if type(flist) is str:
             flist = [flist]
-        
+
         try:
             ds['time'] = flist_to_times(flist)
         except KeyError:
             ds = ds.assign(time=flist_to_times(flist))
 
     dt_options = {
-        'second' : np.timedelta64(1, 's'),
-        'minute' : np.timedelta64(1, 'm'),
-        'hour' : np.timedelta64(1, 'h'),
-        'day' : np.timedelta64(1, 'D'),
+        'second': np.timedelta64(1, 's'),
+        'minute': np.timedelta64(1, 'm'),
+        'hour': np.timedelta64(1, 'h'),
+        'day': np.timedelta64(1, 'D'),
     }
     if dt in dt_options:
 
-        # If we're getting timestamps from `flist`, convert to timedelta 
+        # If we're getting timestamps from `flist`, convert to timedelta
         # and divide by dt to get in specified units
         if flist:
             t = (ds['time'] - ds['time'][0]) / dt_options[dt]
             ds['time'] = t
-        
+
         else:
             raise TypeError('`flist` must be definied to use `dt`.')
         # If not, assume dt describes length between time indices
         # else:
         #     ds['time'] = np.arange(0, dt*len(ds['time']), dt)
-    
 
         # Add unit
         ds['time'].attrs['units'] = dt
@@ -424,16 +422,16 @@ def create_xr_metadata(
         ds['x'] = np.arange(0, len(ds.x)) * dx
         ds['y'] = np.arange(0, len(ds.y)) * dx
 
-        ds['x'].attrs = {'units' : 'm'}
-        ds['y'].attrs = {'units' : 'm'}
-    
+        ds['x'].attrs = {'units': 'm'}
+        ds['y'].attrs = {'units': 'm'}
+
     if dz:
         ds['z'] = np.arange(0, len(ds.z)) * dz
-        ds['z'].attrs = {'units' : 'm'}
+        ds['z'].attrs = {'units': 'm'}
 
     if z:
         ds['z'] = z
-        ds['z'].attrs = {'units' : 'm'}
+        ds['z'].attrs = {'units': 'm'}
 
     return ds
 
@@ -537,7 +535,7 @@ def calc_height(topt, ztn):
     ztop = ztn[59]
     for x in range(0, xlen):
         for y in range(0, ylen):
-            z[:, y, x] = ztn * (1 - (topt[y, x]/ztop)) + topt[y, x]
+            z[:, y, x] = ztn * (1 - (topt[y, x] / ztop)) + topt[y, x]
     return z
 
 
@@ -567,7 +565,7 @@ def z_levels_3d(ztn, topt):
         for y in range(0, ylen):
             for z in range(0, zlen):
                 zheight[z, y, x] = ztn[z] * \
-                    (1-topt[y, x]/ztn[zlen-1])+topt[y, x]
+                    (1 - topt[y, x] / ztn[zlen - 1]) + topt[y, x]
 
     return zheight
 
@@ -597,7 +595,7 @@ def z_levels_2d(ztn, topt):
     for x in range(0, xlen):
         for z in range(0, zlen):
             zheight[z, x] = ztn[z] * \
-                (1-topt[x]/ztn[zlen-1])+topt[x]
+                (1 - topt[x] / ztn[zlen - 1]) + topt[x]
 
     return zheight
 

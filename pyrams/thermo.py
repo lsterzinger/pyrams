@@ -4,6 +4,7 @@ R = 287
 p0 = 1000
 rho_w = 997
 
+
 def temperature(theta, pi, celsius=False):
     """
     Calculates temperature from RAMS output (Exner function)
@@ -47,7 +48,7 @@ def pressure(pi):
         Pressure (hPa)
     """
 
-    p = p0*(pi/cp)**(cp/R)
+    p = p0 * (pi / cp)**(cp / R)
     return p
 
 
@@ -87,9 +88,9 @@ def wsat(theta, pi):
 
     T[T < -80] = -80
     x = T
-    es = c0+x*(c1+x*(c2+x*(c3+x*(c4+x*(c5+x*(c6+x*(c7+x*c8)))))))
+    es = c0 + x * (c1 + x * (c2 + x * (c3 + x * (c4 + x * (c5 + x * (c6 + x * (c7 + x * c8)))))))
 
-    ws = 0.622 * es/(p*100 - es)
+    ws = 0.622 * es / (p * 100 - es)
     return ws
 
 
@@ -115,7 +116,7 @@ def rh(rv, theta, pi):
     """
 
     ws = wsat(theta, pi)
-    rh = rv/ws * 100
+    rh = rv / ws * 100
 
     return rh
 
@@ -141,6 +142,6 @@ def mslp(temp, press, height):
         The MSLP pressure (hPa)
     """
     # p0 = press*(1-(0.0065*height)/(temp + 0.0065*height + 273.15))**-5.257
-    p0 = press * (1-(0.0065*height)/(temp+0.0065*height + 273.15))**-5.257
+    p0 = press * (1 - (0.0065 * height) / (temp + 0.0065 * height + 273.15))**-5.257
 
-    return(p0)
+    return (p0)
