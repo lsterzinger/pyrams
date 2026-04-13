@@ -13,7 +13,7 @@ dependencies = [
     'xarray>=v2022.03.0',
     'pint>=0.18',
     'pint-xarray>=0.3',
-    'cf-xarray>=0.7.4',
+    'cf-xarray>=0.10.11',
     'matplotlib',
     'shapely',
     'netCDF4',
