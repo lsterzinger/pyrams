@@ -10,7 +10,7 @@ dependencies = [
     'pandas',
     'numpy',
     'tqdm',
-    'xarray>=v2022.03.0',
+    'xarray>=2026.2.0',
     'pint>=0.18',
     'pint-xarray>=0.3',
     'cf-xarray>=0.7.4',
