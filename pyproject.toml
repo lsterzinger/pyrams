@@ -11,7 +11,7 @@ dependencies = [
     'numpy',
     'tqdm',
     'xarray>=v2022.03.0',
-    'pint>=0.18',
+    'pint>=0.25.3',
     'pint-xarray>=0.3',
     'cf-xarray>=0.7.4',
     'matplotlib',
